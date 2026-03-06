@@ -3,27 +3,50 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 
-// 1. Define your site's pages (Think of this as your search database)
-const SITE_PAGES = [
-    { title: 'Migration Flows', href: '/trackers/migration', category: 'Tracker', description: 'Real-time humanitarian data and border crossings.' },
-    { title: 'Climate Anomalies', href: '/trackers/climate', category: 'Tracker', description: 'Global temperature shifts and weather events.' },
-    { title: 'Food Security', href: '/trackers/food-security', category: 'Tracker', description: 'Caloric deficits and supply chain mapping.' },
-    { title: 'Methodology', href: '/methodology', category: 'Resource', description: 'How we source and process HDX HAPI data.' },
-    { title: 'API Documentation', href: '/api', category: 'Resource', description: 'Access our datasets programmatically.' },
-];
+// Define the shape of our API response
+interface SearchResult {
+    title: string;
+    href: string;
+    category: string;
+    description: string;
+}
 
 export default function Search() {
     const [query, setQuery] = useState('');
+    const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // To show a loading state
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // 2. Filter the pages based on user input
-    const filteredPages = SITE_PAGES.filter(page => 
-        page.title.toLowerCase().includes(query.toLowerCase()) || 
-        page.description.toLowerCase().includes(query.toLowerCase())
-    );
+    // Debounced API Fetch
+    useEffect(() => {
+        // Don't search if the query is too short
+        if (query.trim().length < 2) {
+            setResults([]);
+            setIsLoading(false);
+            return;
+        }
 
-    // 3. Close the dropdown if the user clicks outside of the search bar
+        setIsLoading(true);
+
+        const fetchResults = async () => {
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                setResults(data);
+            } catch (error) {
+                console.error("Search failed", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Wait 300ms after the user stops typing to fire the request
+        const timeoutId = setTimeout(fetchResults, 300); 
+        return () => clearTimeout(timeoutId);
+    }, [query]);
+
+    // Close on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -34,7 +57,6 @@ export default function Search() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // 4. Handle navigation (closes the dropdown and clears the search)
     const handleSelect = () => {
         setIsOpen(false);
         setQuery('');
@@ -42,7 +64,6 @@ export default function Search() {
 
     return (
         <div className="relative w-full max-w-sm" ref={searchRef}>
-            {/* Search Input */}
             <div className="relative group">
                 <svg 
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-emerald-400 transition-colors" 
@@ -63,12 +84,14 @@ export default function Search() {
                 />
             </div>
 
-            {/* Dropdown Results */}
             {isOpen && query.length > 0 && (
                 <div className="absolute top-full mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl z-50">
-                    {filteredPages.length > 0 ? (
+                    
+                    {isLoading ? (
+                        <div className="px-4 py-6 text-center text-slate-400 text-sm">Searching global data...</div>
+                    ) : results.length > 0 ? (
                         <ul className="max-h-80 overflow-y-auto py-2">
-                            {filteredPages.map((page) => (
+                            {results.map((page) => (
                                 <li key={page.href}>
                                     <Link 
                                         href={page.href}
@@ -93,7 +116,6 @@ export default function Search() {
                     ) : (
                         <div className="px-4 py-6 text-center">
                             <p className="text-sm text-slate-400 font-medium">No results found for "{query}"</p>
-                            <p className="text-xs text-slate-500 mt-1">Try searching for "Migration" or "Data"</p>
                         </div>
                     )}
                 </div>
