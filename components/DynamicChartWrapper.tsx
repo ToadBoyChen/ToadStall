@@ -33,7 +33,7 @@ export default async function DynamicChartWrapper({ blockData }: { blockData: an
   }
 
   return (
-    <div className="my-10 p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm">
+    <div className="my-10 p-2 rounded-2xl border border-slate-200 shadow-md">
       <ChartRenderer type={blockData.chartType} data={finalData} />
       
       {blockData.caption && (

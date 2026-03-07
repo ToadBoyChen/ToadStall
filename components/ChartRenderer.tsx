@@ -15,7 +15,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// A classic YouGov-style color palette
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export default function ChartRenderer({ type, data }: { type: string; data: any[] }) {
@@ -79,8 +78,7 @@ export default function ChartRenderer({ type, data }: { type: string; data: any[
   };
 
   return (
-    // ResponsiveContainer forces the chart to perfectly fit the width of your article card
-    <div className="w-full h-87.5">
+    <div className="w-full h-100">
       <ResponsiveContainer width="100%" height="100%">
         {renderChart()}
       </ResponsiveContainer>
