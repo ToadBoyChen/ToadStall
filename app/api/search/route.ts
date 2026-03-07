@@ -15,16 +15,20 @@ export async function GET(request: Request) {
             _type,
             title,
             "slug": slug.current,
-            "description": summary
+            "description": coalesce(
+                summary, 
+                array::join(string::split(pt::text(body), "")[0..100], "") + "...",
+                "Read more about this " + _type
+            ),
         }
     `;
 
     try {
         const results: any[] = await client.fetch(
-            SEARCH_QUERY, 
+            SEARCH_QUERY,
             { query } as Record<string, unknown>
         );
-        
+
         const formattedResults = results.map((item: any) => ({
             title: item.title,
             href: item._type === 'tool' ? `/tool/${item.slug}` : `/articles/${item.slug}`,

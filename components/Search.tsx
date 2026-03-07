@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { FiSearch } from 'react-icons/fi';
 
 interface SearchResult {
     title: string;
@@ -57,15 +58,14 @@ export default function Search() {
         setQuery('');
     };
 
+    console.log(results)
+
     return (
         <div className="relative w-full" ref={searchRef}>
-            <div className="relative group bg-white py-6 px-16 rounded-full">
-                <svg
-                    className="absolute z-10 left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400 group-focus-within:text-emerald-500 transition-colors"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div className="relative group bg-white/80 py-6 px-16 rounded-full active:scale-98 focus-within:scale-103 focus-within:bg-white transition-all duration-100">
+                <FiSearch
+                    className="absolute z-10 left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-500 transition-colors group-focus-within:text-emerald-600"
+                />
                 <input
                     type="text"
                     placeholder="Explore ToadStall"
@@ -75,17 +75,15 @@ export default function Search() {
                         setIsOpen(true);
                     }}
                     onFocus={() => setIsOpen(true)}
-                    // bg-transparent ensures the input doesn't clip the rounded edges
-                    className="text-slate-900 bg-transparent pl-4 placeholder:text-slate-400 focus:outline-none w-full"
+                    className="text-black bg-transparent pl-4 placeholder:text-slate-400 focus:outline-none w-full"
                 />
             </div>
 
-            {/* White Dropdown Results */}
             {isOpen && query.length > 0 && (
-                <div className="absolute top-full mt-4 w-full bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50">
+                <div className="absolute top-full mt-4 w-full bg-white/60 backdrop-blur-2xl rounded-2xl overflow-hidden z-50">
 
                     {isLoading ? (
-                        <div className="px-4 py-6 text-center text-slate-500 text-sm font-medium">Searching global data...</div>
+                        <div className="px-4 py-6 text-center text-slate-500 text-md font-medium">Searching . . . </div>
                     ) : results.length > 0 ? (
                         <ul className="max-h-80 overflow-y-auto py-2">
                             {results.map((page) => (
@@ -93,20 +91,17 @@ export default function Search() {
                                     <Link
                                         href={page.href}
                                         onClick={handleSelect}
-                                        // Light gray hover effect
-                                        className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors group"
+                                        className="block group px-4 py-3 hover:bg-white/90 transition-colors group"
                                     >
                                         <div className="flex justify-between items-center mb-1">
-                                            {/* Dark text that turns green on hover */}
-                                            <span className="text-sm font-black text-slate-900 group-hover:text-emerald-600 transition-colors">
+                                            <span className="text-md md:text-lg lg:text-xl font-extrabold tracking-tighter group-hover:text-emerald-600 transition-colors">
                                                 {page.title}
                                             </span>
-                                            {/* Light pill background */}
-                                            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                                            <span className="text-xs tracking-wide font-semibold uppercase text-slate-800 bg-slate-100 group-hover:bg-slate-900 group-hover:text-white px-4 py-1 rounded-full">
                                                 {page.category}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-500 line-clamp-1 font-medium">
+                                        <p className="text-sm text-slate-700 line-clamp-1">
                                             {page.description}
                                         </p>
                                     </Link>
@@ -114,9 +109,9 @@ export default function Search() {
                             ))}
                         </ul>
                     ) : (
-                        <div className="px-4 py-6 text-center">
-                            <p className="text-sm text-slate-900 font-bold">No results found for "{query}"</p>
-                            <p className="text-xs text-slate-500 mt-1">Try searching for "Migration" or "Data"</p>
+                        <div className="px-4 py-12 text-center">
+                            <p className="text-md md:text-lg lg:text-xl font-bold">No results found for "{query}"</p>
+                            <p className="text-sm text-slate-700 mt-4 mb-2">Try searching for "Migration" or "Data"</p>
                         </div>
                     )}
                 </div>
