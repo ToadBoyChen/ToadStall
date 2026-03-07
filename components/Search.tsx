@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { FiSearch } from 'react-icons/fi';
 
 interface SearchResult {
     title: string;
@@ -59,13 +60,9 @@ export default function Search() {
 
     return (
         <div className="relative w-full" ref={searchRef}>
-            <div className="relative group bg-white/50 py-6 px-16 rounded-full text-black active:scale-98 transition-all duration-100 focus-within:scale-103">
-                <svg
-                    className="absolute z-10 left-8 top-1/2 -translate-y-1/2 w-6 h-6"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div className="relative group bg-white/20 py-6 px-16 rounded-full active:scale-98 transition-all duration-300 focus-within:scale-103">
+                <FiSearch className="absolute z-10 left-8 top-1/2 -translate-y-1/2 w-6 h-6" />
+
                 <input
                     type="text"
                     placeholder="Explore ToadStall"
@@ -75,7 +72,7 @@ export default function Search() {
                         setIsOpen(true);
                     }}
                     onFocus={() => setIsOpen(true)}
-                    className="pl-4 focus:outline-none w-full"
+                    className="pl-4 focus:outline-none text-xl font-medium"
                 />
             </div>
 
