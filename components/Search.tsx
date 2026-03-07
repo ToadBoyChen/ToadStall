@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 
-// Define the shape of our API response
 interface SearchResult {
     title: string;
     href: string;
@@ -15,12 +14,10 @@ export default function Search() {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // To show a loading state
+    const [isLoading, setIsLoading] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // Debounced API Fetch
     useEffect(() => {
-        // Don't search if the query is too short
         if (query.trim().length < 2) {
             setResults([]);
             setIsLoading(false);
@@ -41,12 +38,10 @@ export default function Search() {
             }
         };
 
-        // Wait 300ms after the user stops typing to fire the request
         const timeoutId = setTimeout(fetchResults, 300); 
         return () => clearTimeout(timeoutId);
     }, [query]);
 
-    // Close on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
