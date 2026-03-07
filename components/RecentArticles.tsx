@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
+import { FiArrowRight } from 'react-icons/fi'
 
-// 1. The GROQ Query
-// We filter for "post", order by newest first, and slice [0...4] to get exactly 4 items.
 const RECENT_POSTS_QUERY = `
-  *[ _type == "post" && defined(slug.current) ] | order(publishedAt desc) [0...4] {
+  *[ _type == "post" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
     _id,
     title,
     "slug": slug.current,
@@ -14,42 +13,36 @@ const RECENT_POSTS_QUERY = `
 `;
 
 export default async function RecentArticles() {
-    // 2. Fetch the data directly on the server
     const posts = await client.fetch(RECENT_POSTS_QUERY);
 
     if (posts.length === 0) {
-        return null; // Don't render the section if there are no articles yet
+        return null;
     }
 
     return (
-        <section className="w-full max-w-6xl mx-auto px-6 py-12">
-            
-            {/* Header Area */}
-            <div className="flex flex-col md:flex-row justify-between items-baseline mb-10 border-b border-slate-800 pb-4">
-                <h2 className="text-3xl font-black text-white tracking-tight">
-                    Latest Analysis
+        <section className="w-full">
+            <div className="flex flex-col md:flex-row justify-between items-baseline mb-4 pb-4">
+                <h2 className="text-6xl font-black text-white tracking-tight mb-2">
+                    Latest Articles
                 </h2>
-                <Link 
-                    href="/articles" 
-                    className="text-emerald-400 hover:text-emerald-300 text-sm font-bold tracking-widest uppercase mt-4 md:mt-0 transition-colors flex items-center gap-1 group"
+                <Link
+                    href="/articles"
+                    className="text-white mix-blend-difference hover:text-emerald-300 text-sm font-bold tracking-widest uppercase mt-4 md:mt-0 transition-colors flex items-center gap-2 group"
                 >
-                    View All Reports 
-                    <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    View All
+                    <FiArrowRight className="text-lg group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
             </div>
-
-            {/* The Grid (2x2 on Desktop) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((post: any) => (
-                    <Link 
-                        key={post._id} 
+                    <Link
+                        key={post._id}
                         href={`/articles/${post.slug}`}
-                        className="group flex flex-col justify-between p-6 bg-slate-900/40 backdrop-blur-sm border border-slate-800/80 rounded-2xl hover:bg-slate-800/60 hover:border-emerald-500/30 transition-all duration-300"
+                        className="group flex flex-col justify-between p-6 bg-white/80 rounded-2xl hover:bg-white hover:border-emerald-500/30 transition-all duration-300"
                     >
                         <div>
-                            {/* Date Pill */}
-                            <div className="mb-4">
-                                <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">
+                            <div className="group mb-4">
+                                <span className="transition-all duration-200 text-xs font-bold tracking-widest uppercase text-emerald-400 bg-emerald-100 group-hover:bg-emerald-800 group-hover:text-emerald-100 px-2 py-1 rounded-md">
                                     {new Date(post.publishedAt || Date.now()).toLocaleDateString('en-US', {
                                         month: 'short',
                                         day: 'numeric',
@@ -57,19 +50,17 @@ export default async function RecentArticles() {
                                     })}
                                 </span>
                             </div>
-
-                            {/* Title & Excerpt */}
-                            <h3 className="text-xl font-bold text-slate-100 mb-2 group-hover:text-white transition-colors line-clamp-2 leading-tight">
+                            <h3 className="text-2xl font-bold mb-3 group-hover:text-emerald-400 transition-colors duration-300 tracking-tight">
                                 {post.title}
                             </h3>
-                            <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                            <p className="text-slate-700 leading-relaxed font-medium">
                                 {post.excerpt}
                             </p>
                         </div>
                     </Link>
                 ))}
             </div>
-            
+
         </section>
     );
 }
