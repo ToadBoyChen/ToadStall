@@ -58,8 +58,6 @@ export default function Search() {
         setQuery('');
     };
 
-    console.log(results)
-
     return (
         <div className="relative w-full" ref={searchRef}>
             <div className="relative group bg-white/80 py-6 px-16 rounded-full active:scale-98 focus-within:scale-103 focus-within:bg-white transition-all duration-100">
