@@ -6,8 +6,7 @@ import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 
-// 1. Updated query to look for "article" and "mainImage"
-const SINGLE_ARTICLE_QUERY = `*[ _type == "article" && slug.current == $slug ][0] {
+const SINGLE_DATA_QUERY = `*[ _type == "data" && slug.current == $slug ][0] {
   title,
   publishedAt,
   body,
@@ -47,11 +46,9 @@ const myPortableTextComponents = {
 
 export default async function SingleArticle({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
-    
-    // 2. Updated the fetch call to use the new query name
-    const article = await client.fetch(SINGLE_ARTICLE_QUERY, { slug: resolvedParams.slug });
+    const data = await client.fetch(SINGLE_DATA_QUERY, { slug: resolvedParams.slug });
 
-    if (!article) notFound();
+    if (!data) notFound();
 
     return (
         <main className="relative z-10 w-full min-h-screen pt-32 px-6 pb-48">
@@ -63,11 +60,11 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
 
                     {/* 3. Updated to check for mainImage instead of image */}
-                    {article.mainImage && (
+                    {data.mainImage && (
                         <div className="relative w-full h-64 md:h-96 mb-10 overflow-hidden rounded-2xl">
                             <Image
-                                src={urlFor(article.mainImage).url()}
-                                alt={article.title || 'Article banner'}
+                                src={urlFor(data.mainImage).url()}
+                                alt={data.title || 'Article banner'}
                                 fill
                                 className="object-cover"
                                 priority
@@ -77,16 +74,16 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
 
                     <header className="mb-12 border-b border-slate-200 pb-8">
                         <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-                            {article.title}
+                            {data.title}
                         </h1>
                         <p className="text-slate-500 font-medium">
-                            Published on {new Date(article.publishedAt || Date.now()).toLocaleDateString()}
+                            Published on {new Date(data.publishedAt || Date.now()).toLocaleDateString()}
                         </p>
                     </header>
 
                     <div className="prose prose-lg prose-slate prose-a:text-emerald-600 max-w-none">
                         <PortableText
-                            value={article.body}
+                            value={data.body}
                             components={myPortableTextComponents}
                         />
                     </div>

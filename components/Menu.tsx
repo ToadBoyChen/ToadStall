@@ -1,33 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import { FiGlobe, FiFileText, FiClipboard, FiCode, FiArrowRight } from 'react-icons/fi';
+import { FiGlobe, FiFileText, FiArrowRight } from 'react-icons/fi';
+import { MdOutlinePeopleAlt } from 'react-icons/md';
+import { TbTools } from 'react-icons/tb';
 
-// 1. Define the menu items with React Icon components
 const MENU_ITEMS = [
     {
-        title: 'Data Trackers & Tools',
-        href: '/tool',
-        description: 'Interactive maps, 3D globes, and live humanitarian data visualizations.',
+        title: 'Data & Analysis',
+        href: '/data',
+        description: 'Interactive maps and live data with discussions and debate.',
         icon: <FiGlobe />
     },
     {
-        title: 'Analysis & Reports',
+        title: 'Articles & Reports',
         href: '/articles',
-        description: 'In-depth articles, methodology breakdowns, and weekly data briefs.',
+        description: 'Articles, methodology breakdowns, and data briefs.',
         icon: <FiFileText />
     },
     {
-        title: 'Methodology',
+        title: 'Tools & Technical',
         href: '/methodology',
-        description: 'Transparency on how we source and process HDX HAPI open-source data.',
-        icon: <FiClipboard />
+        description: 'Tools for you to use and comprehensive breakdowns on how ToadStall works.',
+        icon: <TbTools />
     },
     {
-        title: 'Developer API',
+        title: 'Community & Blog',
         href: '/api',
-        description: 'Access our custom datasets programmatically for your own projects.',
-        icon: <FiCode />
+        description: 'A place for all to have an opinion and say. Join the discussion.',
+        icon: <MdOutlinePeopleAlt />
     }
 ];
 
@@ -41,7 +42,7 @@ export default function Menu() {
                 </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {MENU_ITEMS.map((item) => (
                     <Link
                         key={item.href}
@@ -59,7 +60,7 @@ export default function Menu() {
                             {item.description}
                         </p>
 
-                        <div className="mt-8 flex items-center text-emerald-500 font-bold text-sm tracking-widest uppercase opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                        <div className="mt-8 flex items-center text-emerald-500 font-bold text-sm tracking-widest uppercase translate-x-0 group-hover:translate-x-4 transition-all duration-300">
                             Explore <FiArrowRight className="ml-2 text-lg" />
                         </div>
                     </Link>

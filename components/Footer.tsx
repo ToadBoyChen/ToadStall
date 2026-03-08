@@ -5,8 +5,7 @@ import { FiTwitter, FiGithub, FiMail } from 'react-icons/fi';
 
 export default function Footer() {
     return (
-        /* Removed dark bg, added solid white (or bg-stone-50 for softness) */
-        <footer className="relative z-50 w-full bg-white pt-20 pb-10 px-6">
+        <footer className="relative z-50 w-full bg-white/80 pt-20 pb-10 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     

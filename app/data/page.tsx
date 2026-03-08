@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 
-const ARTICLES_QUERY = `*[ _type == "article" && defined(slug.current) ] | order(publishedAt desc) {
+const ARTICLES_QUERY = `*[ _type == "data" && defined(slug.current) ] | order(publishedAt desc) {
   _id,
   title,
   slug,
@@ -9,14 +9,14 @@ const ARTICLES_QUERY = `*[ _type == "article" && defined(slug.current) ] | order
   "excerpt": array::join(string::split((pt::text(body)), "")[0..120], "") + "..."
 }`;
 
-export default async function ArticlesPage() {
+export default async function DataPage() {
   const articles = await client.fetch(ARTICLES_QUERY);
 
   return (
     <main className="relative z-10 w-full min-h-screen pt-32 px-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-5xl font-black text-white tracking-tighter mb-12 drop-shadow-md">
-          Analysis & Reports
+          Data
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -78,7 +78,7 @@ export default function Search() {
             </div>
 
             {isOpen && query.length > 0 && (
-                <div className="absolute top-full mt-4 w-full bg-white/60 backdrop-blur-2xl rounded-2xl overflow-hidden z-50">
+                <div className="absolute top-full mt-4 w-full bg-white rounded-2xl overflow-hidden z-50">
 
                     {isLoading ? (
                         <div className="px-4 py-6 text-center text-slate-500 text-md font-medium">Searching . . . </div>
@@ -89,7 +89,7 @@ export default function Search() {
                                     <Link
                                         href={page.href}
                                         onClick={handleSelect}
-                                        className="block group px-4 py-3 hover:bg-white/90 transition-colors group"
+                                        className="block group px-4 py-3 transition-colors group"
                                     >
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="text-md md:text-lg lg:text-xl font-extrabold tracking-tighter group-hover:text-emerald-600 transition-colors">
