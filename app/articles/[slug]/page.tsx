@@ -5,8 +5,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import EngagementBar from '@/components/EngagementBar';
 
-// 1. Updated query to look for "article" and "mainImage"
 const SINGLE_ARTICLE_QUERY = `*[ _type == "article" && slug.current == $slug ][0] {
   title,
   publishedAt,
@@ -47,8 +47,7 @@ const myPortableTextComponents = {
 
 export default async function SingleArticle({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
-    
-    // 2. Updated the fetch call to use the new query name
+
     const article = await client.fetch(SINGLE_ARTICLE_QUERY, { slug: resolvedParams.slug });
 
     if (!article) notFound();
@@ -61,8 +60,6 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
                     &larr; Back to Reports
                 </Link>
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
-
-                    {/* 3. Updated to check for mainImage instead of image */}
                     {article.mainImage && (
                         <div className="relative w-full h-64 md:h-96 mb-10 overflow-hidden rounded-2xl">
                             <Image
@@ -91,7 +88,7 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
                         />
                     </div>
                 </article>
-
+                <EngagementBar postId={article._id} />
             </div>
         </main>
     );

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import EngagementBar from '@/components/EngagementBar';
 
 // 1. Updated query to match the 'data' schema fields
 const SINGLE_DATA_QUERY = `*[ _type == "data" && slug.current == $slug ][0] {
@@ -59,14 +60,14 @@ export default async function SingleDataPage({ params }: { params: Promise<{ slu
                 <Link href="/data" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
                     &larr; Back to Data Hub
                 </Link>
-                
+
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
 
                     <header className="mb-12 border-b border-slate-200 pb-8">
                         <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
                             {data.title}
                         </h1>
-                        
+
                         {/* 3. Updated metadata to show Data Source and Last Updated */}
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-500 font-medium mt-6">
                             {data.lastUpdated && (
@@ -74,10 +75,10 @@ export default async function SingleDataPage({ params }: { params: Promise<{ slu
                                     Last Updated: <span className="text-slate-700">{new Date(data.lastUpdated).toLocaleDateString()}</span>
                                 </p>
                             )}
-                            
+
                             {data.sourceName && (
                                 <p className="flex items-center gap-2">
-                                    Source: 
+                                    Source:
                                     {data.sourceUrl ? (
                                         <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 decoration-emerald-600/30">
                                             {data.sourceName}
@@ -97,7 +98,7 @@ export default async function SingleDataPage({ params }: { params: Promise<{ slu
                         />
                     </div>
                 </article>
-
+                <EngagementBar postId={data._id} />
             </div>
         </main>
     );

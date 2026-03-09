@@ -5,9 +5,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import EngagementBar from '@/components/EngagementBar';
 
-// 1. Updated to match your new schema type "tools-technical"
-// 2. Swapped mainImage and publishedAt for url, pricing, and _createdAt
 const SINGLE_TOOL_QUERY = `*[ _type == "tools-technical" && slug.current == $slug ][0] {
   title,
   _createdAt,
@@ -55,8 +54,6 @@ export default async function SingleToolPage({ params }: { params: Promise<{ slu
     return (
         <main className="relative z-10 w-full min-h-screen pt-32 px-6 pb-48">
             <div className="max-w-4xl mx-auto">
-
-                {/* 3. Updated back link to point to your new routing */}
                 <Link href="/tools-technical" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
                     &larr; Back to Technical Tools
                 </Link>
@@ -67,24 +64,22 @@ export default async function SingleToolPage({ params }: { params: Promise<{ slu
                             <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
                                 {tool.title}
                             </h1>
-                            {/* Display the pricing badge if it exists */}
                             {tool.pricing && (
                                 <span className="mt-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1.5 rounded-md">
                                     {tool.pricing}
                                 </span>
                             )}
                         </div>
-                        
+
                         <div className="flex items-center gap-4 mt-6">
                             <p className="text-slate-500 font-medium">
                                 Added on {new Date(tool._createdAt || Date.now()).toLocaleDateString()}
                             </p>
-                            
-                            {/* Display an external link button if a URL was provided */}
+
                             {tool.url && (
-                                <a 
-                                    href={tool.url} 
-                                    target="_blank" 
+                                <a
+                                    href={tool.url}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                                 >
@@ -101,7 +96,7 @@ export default async function SingleToolPage({ params }: { params: Promise<{ slu
                         />
                     </div>
                 </article>
-
+                <EngagementBar postId={tool._id} />
             </div>
         </main>
     );

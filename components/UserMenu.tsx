@@ -35,6 +35,9 @@ export default function UserMenu() {
     }
 
     const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
+    
+    // Safely extract the avatar URL from the profile object attached in AuthContext
+    const avatarUrl = (user as any).profile?.avatarURL || null;
 
     return (
         <div className="relative" ref={menuRef}>
@@ -42,8 +45,16 @@ export default function UserMenu() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-3 p-1 pr-4 bg-white rounded-full shadow-sm hover:shadow-md transition-all border border-slate-100"
             >
-                <div className="w-9 h-9 flex items-center justify-center bg-emerald-500 text-white font-bold rounded-full">
-                    {initial}
+                <div className="w-9 h-9 flex items-center justify-center bg-emerald-500 text-white font-bold rounded-full overflow-hidden shrink-0">
+                    {avatarUrl ? (
+                        <img 
+                            src={avatarUrl} 
+                            alt={`${user.name}'s avatar`} 
+                            className="w-full h-full object-cover" 
+                        />
+                    ) : (
+                        initial
+                    )}
                 </div>
                 <span className="text-sm font-bold text-slate-700 max-w-25 truncate">
                     {user.name}
