@@ -5,14 +5,16 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import EngagementBar from '@/components/EngagementBar';
 
 // 1. Updated _type to "community" and added the "status" field
 const SINGLE_COMMUNITY_QUERY = `*[ _type == "community" && slug.current == $slug ][0] {
-  title,
-  publishedAt,
-  status,
-  body,
-  author
+    _id,
+    title,
+    publishedAt,
+    status,
+    body,
+    author
 }`;
 
 const myPortableTextComponents = {
@@ -83,7 +85,7 @@ export default async function SingleCommunityPost({ params }: { params: Promise<
                         />
                     </div>
                 </article>
-
+                <EngagementBar postId={community._id} />
             </div>
         </main>
     );

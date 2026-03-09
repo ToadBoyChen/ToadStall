@@ -8,12 +8,14 @@ interface AuthContextType {
     user: Models.User<Models.Preferences> | null;
     isLoading: boolean;
     logout: () => Promise<void>;
+    checkUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
     isLoading: true,
     logout: async () => {},
+    checkUser: async () => {}, 
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -26,11 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function checkUser() {
         try {
-            // Check if there is an active session
             const currentAccount = await account.get();
             setUser(currentAccount);
         } catch (error) {
-            // If get() throws an error, it means no one is logged in.
             setUser(null);
         } finally {
             setIsLoading(false);
@@ -47,11 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, logout }}>
+        <AuthContext.Provider value={{ user, isLoading, logout, checkUser }}>
             {children}
         </AuthContext.Provider>
     );
 }
 
-// Custom hook to use the auth context easily
 export const useAuth = () => useContext(AuthContext);

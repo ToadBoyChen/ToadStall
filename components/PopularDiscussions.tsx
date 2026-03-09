@@ -36,7 +36,7 @@ export default async function RecentArticles() {
                         className="group flex flex-col justify-between p-6 bg-white/80 rounded-2xl hover:bg-white hover:border-emerald-500/30 transition-all duration-300 border border-transparent"
                     >
                         {/* Make the top section the clickable link to the article */}
-                        <Link href={`/articles/${post.slug}`} className="block mb-4">
+                        <Link href={`/community/${post.slug}`} className="block mb-4">
                             <div className="mb-4">
                                 <span className="transition-all duration-200 text-xs font-bold tracking-widest uppercase text-emerald-400 bg-emerald-100 group-hover:bg-emerald-800 group-hover:text-emerald-100 px-2 py-1 rounded-md">
                                     {new Date(post.publishedAt || Date.now()).toLocaleDateString('en-US', {

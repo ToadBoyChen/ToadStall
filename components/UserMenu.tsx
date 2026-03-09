@@ -9,7 +9,6 @@ export default function UserMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Close the dropdown if the user clicks outside of it
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -35,7 +34,6 @@ export default function UserMenu() {
         );
     }
 
-    // Get the first initial of the user's name for the avatar
     const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
 
     return (
