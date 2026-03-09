@@ -12,8 +12,8 @@ export default function Home() {
             <section className="max-w-xl md:max-w-3xl lg:max-w-6xl px-8 my-32 gap-32 flex flex-col">
                 <Search />
                 <Menu />
-                <RecentArticles />
                 <PopularDiscussions />
+                <RecentArticles />
                 <RecentData />
                 <BestTools />
                 <AboutMe />

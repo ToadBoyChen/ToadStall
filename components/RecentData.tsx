@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi'
 
 const RECENT_POSTS_QUERY = `
-  *[ _type == "post" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
+  *[ _type == "data" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
     _id,
     title,
     "slug": slug.current,
@@ -23,7 +23,7 @@ export default async function RecentData() {
         <section className="w-full">
             <div className="flex flex-col md:flex-row justify-between items-baseline mb-4 pb-4">
                 <h2 className="text-6xl font-black text-white tracking-tight mb-2">
-                    Latest Articles
+                    Key Data Points
                 </h2>
                 <Link
                     href="/articles"

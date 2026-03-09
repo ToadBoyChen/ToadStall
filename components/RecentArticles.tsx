@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi'
 
 const RECENT_POSTS_QUERY = `
-  *[ _type == "post" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
+  *[ _type == "article" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
     _id,
     title,
     "slug": slug.current,
