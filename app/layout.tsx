@@ -4,9 +4,11 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Background from "@/components/Background";
-import TransitionWrapper from "@/components/TransitionWrapper";
 import Breadcrumb from "@/components/Breadcrumb";
 import ScrollIndicator from "@/components/ScrollIndicator";
+
+// 1. Import the AuthProvider
+import { AuthProvider } from "@/context/AuthContext"; 
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -31,19 +33,18 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative min-h-screen`}>
+                {/* 2. Wrap everything inside the body with AuthProvider */}
+                <AuthProvider>
+                    <ScrollIndicator />
+                    <Nav />
+                    <Background />
 
-                <ScrollIndicator />
-                <Nav />
-                <Background />
-
-                <TransitionWrapper>
                     <div className="flex flex-col min-h-screen">
                         <Breadcrumb />
                         {children}
                         <Footer />
                     </div>
-                </TransitionWrapper>
-
+                </AuthProvider>
             </body>
         </html>
     );
