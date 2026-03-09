@@ -22,7 +22,7 @@ export default async function DataPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {articles.map((article: any) => (
             <Link 
-              href={`/articles/${article.slug.current}`} 
+              href={`/data/${article.slug.current}`} 
               key={article._id}
               className="block bg-white rounded-2xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:scale-[1.02] transition-transform duration-300"
             >

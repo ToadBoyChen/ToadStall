@@ -12,9 +12,9 @@ export const structure: StructureResolver = (S) =>
             .title('Content Types')
             .items([
               S.documentTypeListItem('article').title('Articles'),
-              S.documentTypeListItem('discussion').title('Discussions'),
+              S.documentTypeListItem('community').title('Communities'),
               S.documentTypeListItem('data').title('Data Hub'),
-              S.documentTypeListItem('tool').title('Tools'),
+              S.documentTypeListItem('tools-technical').title('Tools & Technical'),
             ])
         ),
       
@@ -36,6 +36,6 @@ export const structure: StructureResolver = (S) =>
       
       // Catch-all for other types
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !['article', 'discussion', 'data', 'tool', 'category', 'author'].includes(item.getId()!),
+        (item) => item.getId() && !['article', 'community', 'data', 'tools-technical', 'category', 'author'].includes(item.getId()!),
       ),
     ])

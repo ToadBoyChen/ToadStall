@@ -6,12 +6,13 @@ import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 
+// 1. Updated query to match the 'data' schema fields
 const SINGLE_DATA_QUERY = `*[ _type == "data" && slug.current == $slug ][0] {
   title,
-  publishedAt,
-  body,
-  author,
-  mainImage
+  sourceName,
+  sourceUrl,
+  lastUpdated,
+  body
 }`;
 
 const myPortableTextComponents = {
@@ -26,7 +27,7 @@ const myPortableTextComponents = {
                 <div className="relative w-full h-100 my-8 overflow-hidden rounded-xl">
                     <Image
                         src={urlFor(value).url()}
-                        alt={value.alt || 'Inline article image'}
+                        alt={value.alt || 'Inline data image'}
                         fill
                         className="object-cover"
                     />
@@ -44,7 +45,7 @@ const myPortableTextComponents = {
     },
 };
 
-export default async function SingleArticle({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SingleDataPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const data = await client.fetch(SINGLE_DATA_QUERY, { slug: resolvedParams.slug });
 
@@ -54,31 +55,39 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
         <main className="relative z-10 w-full min-h-screen pt-32 px-6 pb-48">
             <div className="max-w-4xl mx-auto">
 
-                <Link href="/articles" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
-                    &larr; Back to Reports
+                {/* 2. Updated back link */}
+                <Link href="/data" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
+                    &larr; Back to Data Hub
                 </Link>
+                
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
-
-                    {/* 3. Updated to check for mainImage instead of image */}
-                    {data.mainImage && (
-                        <div className="relative w-full h-64 md:h-96 mb-10 overflow-hidden rounded-2xl">
-                            <Image
-                                src={urlFor(data.mainImage).url()}
-                                alt={data.title || 'Article banner'}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        </div>
-                    )}
 
                     <header className="mb-12 border-b border-slate-200 pb-8">
                         <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
                             {data.title}
                         </h1>
-                        <p className="text-slate-500 font-medium">
-                            Published on {new Date(data.publishedAt || Date.now()).toLocaleDateString()}
-                        </p>
+                        
+                        {/* 3. Updated metadata to show Data Source and Last Updated */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-500 font-medium mt-6">
+                            {data.lastUpdated && (
+                                <p>
+                                    Last Updated: <span className="text-slate-700">{new Date(data.lastUpdated).toLocaleDateString()}</span>
+                                </p>
+                            )}
+                            
+                            {data.sourceName && (
+                                <p className="flex items-center gap-2">
+                                    Source: 
+                                    {data.sourceUrl ? (
+                                        <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-700 underline underline-offset-4 decoration-emerald-600/30">
+                                            {data.sourceName}
+                                        </a>
+                                    ) : (
+                                        <span className="text-slate-700">{data.sourceName}</span>
+                                    )}
+                                </p>
+                            )}
+                        </div>
                     </header>
 
                     <div className="prose prose-lg prose-slate prose-a:text-emerald-600 max-w-none">

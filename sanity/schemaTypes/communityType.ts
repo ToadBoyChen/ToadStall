@@ -2,8 +2,8 @@ import {defineField, defineType} from 'sanity'
 import {CommentIcon} from '@sanity/icons'
 
 export const communityType = defineType({
-  name: 'discussion',
-  title: 'Discussion',
+  name: 'community',
+  title: 'Community',
   type: 'document',
   icon: CommentIcon,
   fields: [

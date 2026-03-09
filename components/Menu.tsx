@@ -20,13 +20,13 @@ const MENU_ITEMS = [
     },
     {
         title: 'Tools & Technical',
-        href: '/methodology',
+        href: '/tools-technical',
         description: 'Tools for you to use and comprehensive breakdowns on how ToadStall works.',
         icon: <TbTools />
     },
     {
         title: 'Community & Blog',
-        href: '/api',
+        href: '/community',
         description: 'A place for all to have an opinion and say. Join the discussion.',
         icon: <MdOutlinePeopleAlt />
     }

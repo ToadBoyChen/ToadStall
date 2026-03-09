@@ -2,8 +2,8 @@ import {defineField, defineType} from 'sanity'
 import {WrenchIcon} from '@sanity/icons'
 
 export const toolType = defineType({
-  name: 'tool',
-  title: 'Tool',
+  name: 'tools-technical',
+  title: 'tools & Technical',
   type: 'document',
   icon: WrenchIcon,
   fields: [

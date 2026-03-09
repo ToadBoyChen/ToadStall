@@ -6,12 +6,13 @@ import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 
-const SINGLE_COMMUNITY_QUERY = `*[ _type == "article" && slug.current == $slug ][0] {
+// 1. Updated _type to "community" and added the "status" field
+const SINGLE_COMMUNITY_QUERY = `*[ _type == "community" && slug.current == $slug ][0] {
   title,
   publishedAt,
+  status,
   body,
-  author,
-  mainImage
+  author
 }`;
 
 const myPortableTextComponents = {
@@ -26,7 +27,7 @@ const myPortableTextComponents = {
                 <div className="relative w-full h-100 my-8 overflow-hidden rounded-xl">
                     <Image
                         src={urlFor(value).url()}
-                        alt={value.alt || 'Inline article image'}
+                        alt={value.alt || 'Inline community image'}
                         fill
                         className="object-cover"
                     />
@@ -44,7 +45,7 @@ const myPortableTextComponents = {
     },
 };
 
-export default async function SingleArticle({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SingleCommunityPost({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const community = await client.fetch(SINGLE_COMMUNITY_QUERY, { slug: resolvedParams.slug });
 
@@ -54,30 +55,24 @@ export default async function SingleArticle({ params }: { params: Promise<{ slug
         <main className="relative z-10 w-full min-h-screen pt-32 px-6 pb-48">
             <div className="max-w-4xl mx-auto">
 
-                <Link href="/articles" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
-                    &larr; Back to Reports
+                {/* 2. Updated back link */}
+                <Link href="/community" className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
+                    &larr; Back to Discussions
                 </Link>
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
 
-                    {/* 3. Updated to check for mainImage instead of image */}
-                    {community.mainImage && (
-                        <div className="relative w-full h-64 md:h-96 mb-10 overflow-hidden rounded-2xl">
-                            <Image
-                                src={urlFor(community.mainImage).url()}
-                                alt={community.title || 'Article banner'}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        </div>
-                    )}
-
                     <header className="mb-12 border-b border-slate-200 pb-8">
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-                            {community.title}
-                        </h1>
+                        <div className="flex justify-between items-start mb-4">
+                            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                {community.title}
+                            </h1>
+                            {/* Optional: Show status badge on the post itself */}
+                            <span className={`mt-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md ${community.status === 'closed' ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-600'}`}>
+                                {community.status || 'Open'}
+                            </span>
+                        </div>
                         <p className="text-slate-500 font-medium">
-                            Published on {new Date(community.publishedAt || Date.now()).toLocaleDateString()}
+                            Started on {new Date(community.publishedAt || Date.now()).toLocaleDateString()}
                         </p>
                     </header>
 
