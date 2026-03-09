@@ -4,14 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { account, databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { ID, AppwriteException } from 'appwrite';
-
-// FIX 3: Import the useAuth hook
 import { useAuth } from '@/context/AuthContext';
 
 export default function AuthPage() {
     const router = useRouter();
 
-    // FIX 4: Pull checkUser from the context
     const { checkUser } = useAuth();
 
     const [isSignUp, setIsSignUp] = useState(false);
@@ -28,24 +25,20 @@ export default function AuthPage() {
 
         try {
             if (isSignUp) {
-                // 1. Create the account
                 const userAccount = await account.create(ID.unique(), email, password, name);
 
-                // 2. Create the session
                 await account.createEmailPasswordSession(email, password);
 
-                // 3. Create the profile ONLY during sign up
                 await databases.createDocument(
                     appwriteDatabaseId,
                     process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
                     ID.unique(),
                     {
-                        userId: userAccount.$id,
+                        userID: userAccount.$id,
                         username: name,
                     }
                 );
             } else {
-                // Just login, don't try to create a document!
                 await account.createEmailPasswordSession(email, password);
             }
 

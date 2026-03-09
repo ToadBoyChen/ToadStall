@@ -1,11 +1,15 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { account } from '@/lib/appwrite';
-import { Models } from 'appwrite';
+import { account, databases, appwriteDatabaseId } from '@/lib/appwrite';
+import { Models, Query } from 'appwrite';
+
+interface UserWithProfile extends Models.User<Models.Preferences> {
+    profile?: Models.Document; 
+}
 
 interface AuthContextType {
-    user: Models.User<Models.Preferences> | null;
+    user: UserWithProfile | null;
     isLoading: boolean;
     logout: () => Promise<void>;
     checkUser: () => Promise<void>;
@@ -19,7 +23,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+    const [user, setUser] = useState<UserWithProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -29,7 +33,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function checkUser() {
         try {
             const currentAccount = await account.get();
-            setUser(currentAccount);
+            
+            try {
+                const profileRes = await databases.listDocuments(
+                    appwriteDatabaseId,
+                    process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
+                    [Query.equal('userID', currentAccount.$id)]
+                );
+
+                const userProfile = profileRes.documents[0] || null;
+                
+                setUser({
+                    ...currentAccount,
+                    profile: userProfile 
+                });
+            } catch (profileError) {
+                console.error("Failed to load user profile data", profileError);
+                setUser(currentAccount); 
+            }
+
         } catch (error) {
             setUser(null);
         } finally {

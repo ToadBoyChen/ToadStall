@@ -141,10 +141,12 @@ export default function EngagementBar({ postId }: { postId: string }) {
         console.log(user)
 
         try {
+            const commentId = ID.unique();
+
             const newDoc = await databases.createDocument(
                 appwriteDatabaseId,
                 process.env.NEXT_PUBLIC_APPWRITE_COMMENTS_COLLECTION_ID as string,
-                ID.unique(),
+                commentId,
                 {
                     sanityPostId: postId,
                     userId: user.$id,
