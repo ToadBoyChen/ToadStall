@@ -8,11 +8,12 @@ import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 import EngagementBar from '@/components/EngagementBar';
 
 const SINGLE_ARTICLE_QUERY = `*[ _type == "article" && slug.current == $slug ][0] {
-  title,
-  publishedAt,
-  body,
-  author,
-  mainImage
+    _id,
+    title,
+    publishedAt,
+    body,
+    author,
+    mainImage
 }`;
 
 const myPortableTextComponents = {

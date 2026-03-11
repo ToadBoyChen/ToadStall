@@ -8,11 +8,12 @@ import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 import EngagementBar from '@/components/EngagementBar';
 
 const SINGLE_TOOL_QUERY = `*[ _type == "tools-technical" && slug.current == $slug ][0] {
-  title,
-  _createdAt,
-  body,
-  url,
-  pricing
+    _id,
+    title,
+    _createdAt,
+    body,
+    url,
+    pricing
 }`;
 
 const myPortableTextComponents = {

@@ -7,13 +7,13 @@ import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/DynamicChartWrapper';
 import EngagementBar from '@/components/EngagementBar';
 
-// 1. Updated query to match the 'data' schema fields
 const SINGLE_DATA_QUERY = `*[ _type == "data" && slug.current == $slug ][0] {
-  title,
-  sourceName,
-  sourceUrl,
-  lastUpdated,
-  body
+    _id,
+    title,
+    sourceName,
+    sourceUrl,
+    lastUpdated,
+    body
 }`;
 
 const myPortableTextComponents = {

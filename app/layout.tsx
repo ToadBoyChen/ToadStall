@@ -32,8 +32,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative min-h-screen`}>
-                {/* 2. Wrap everything inside the body with AuthProvider */}
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}>
                 <AuthProvider>
                     <ScrollIndicator />
                     <Nav />
