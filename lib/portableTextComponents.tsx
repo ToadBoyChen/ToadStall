@@ -23,6 +23,7 @@ export const sharedPortableTextComponents = {
                         startYear={value.startYear}
                         endYear={value.endYear}
                         defaultChartType={value.defaultChartType}
+                        smartYAxis={value.smartYAxis}
                     />
                 </div>
             );

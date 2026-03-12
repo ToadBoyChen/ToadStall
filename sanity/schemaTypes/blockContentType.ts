@@ -77,6 +77,13 @@ export const blockContentType = defineType({
                     options: { list: ['bar', 'line', 'pie', 'doughnut'] }
                 }),
                 defineField({
+                    name: 'smartYAxis',
+                    title: 'Smart Y-Axis (Auto-Scale)',
+                    type: 'boolean',
+                    description: 'Turn on to zoom the chart in on the data range instead of starting at 0. Best for Line charts.',
+                    initialValue: true
+                }),
+                defineField({
                     name: 'dataSource',
                     title: 'Data Source',
                     type: 'string',
@@ -194,6 +201,13 @@ export const blockContentType = defineType({
                     name: 'title',
                     title: 'Widget Title (Optional)',
                     type: 'string',
+                }),
+                defineField({
+                    name: 'smartYAxis',
+                    title: 'Smart Y-Axis (Auto-Scale)',
+                    type: 'boolean',
+                    description: 'Turn on to zoom the chart in on the data range instead of starting at 0. Best for Line charts.',
+                    initialValue: true
                 }),
                 defineField({
                     name: 'defaultChartType',
