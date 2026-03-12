@@ -5,6 +5,7 @@ import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import Background from "@/components/layout/Background";
 import Breadcrumb from "@/components/layout/Breadcrumb";
+import { Analytics } from "@vercel/analytics/next"
 
 import { AuthProvider } from "@/context/AuthContext"; 
 
@@ -31,6 +32,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}>
+                <Analytics/>
                 <AuthProvider>
                     <Nav />
                     <Background />
