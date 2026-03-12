@@ -56,8 +56,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             authorName={post.authorName}
             mainImage={post.mainImage}
             body={post.body}
-            backLink="/articles"
-            backLabel="Back to Reports"
             portableTextComponents={myPortableTextComponents}
         />
     );

@@ -7,7 +7,7 @@ export default function ExpandableText({ text }: { text: string }) {
 
     if (!text) return null;
 
-    const characterLimit = 100;
+    const characterLimit = 200;
     const needsTruncation = text.length > characterLimit;
 
     const displayText = isExpanded

@@ -11,8 +11,6 @@ interface PageContentProps {
     authorName?: string;
     mainImage?: any;
     body: any;
-    backLink: string;
-    backLabel: string;
     portableTextComponents: any;
     headerExtras?: React.ReactNode;
 }
@@ -24,19 +22,12 @@ export default function PageContent({
     authorName,
     mainImage,
     body,
-    backLink,
-    backLabel,
     portableTextComponents,
     headerExtras
 }: PageContentProps) {
     return (
         <main className="relative z-10 w-full min-h-screen pt-32 px-6 pb-48">
-            <div className="max-w-4xl mx-auto">
-
-                <Link href={backLink} className="text-emerald-400 hover:text-emerald-300 font-semibold mb-8 inline-block transition-colors">
-                    &larr; {backLabel}
-                </Link>
-                
+            <div className="max-w-4xl mx-auto">        
                 <article className="bg-white rounded-3xl p-10 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
                     
                     {mainImage && mainImage.asset && (

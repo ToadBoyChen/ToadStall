@@ -5,15 +5,16 @@ import { useRouter } from 'next/navigation';
 import { account, databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { ID, AppwriteException } from 'appwrite';
 import { useAuth } from '@/context/AuthContext';
+import { FiMail, FiLock, FiUser, FiAlertCircle } from 'react-icons/fi';
 
 export default function AuthPage() {
     const router = useRouter();
-
     const { checkUser } = useAuth();
 
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,6 +22,12 @@ export default function AuthPage() {
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+
+        if (isSignUp && password !== confirmPassword) {
+            setError('Passwords do not match. Please try again.');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -57,82 +64,123 @@ export default function AuthPage() {
         }
     };
 
+    const toggleMode = () => {
+        setIsSignUp(!isSignUp);
+        setError('');
+        setPassword('');
+        setConfirmPassword('');
+    };
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-                <h2 className="text-3xl font-black text-slate-800 mb-6 text-center">
-                    {isSignUp ? 'Join the Community' : 'Welcome Back'}
-                </h2>
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="max-w-md w-full bg-white/80 rounded-3xl p-8 md:p-10">
+                
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-black text-slate-800 tracking-tight mb-2">
+                        {isSignUp ? 'Join ToadStall' : 'Welcome Back'}
+                    </h2>
+                    <p className="text-slate-500 font-medium text-sm">
+                        {isSignUp ? 'Create an account to join the discussion.' : 'Enter your credentials to access your account.'}
+                    </p>
+                </div>
 
                 {error && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 font-medium border border-red-100">
-                        {error}
+                    <div className="flex items-start gap-2 bg-red-50 text-red-600 p-4 rounded-xl text-sm mb-6 font-medium border border-red-100 animate-in fade-in zoom-in duration-200">
+                        <FiAlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                        <span>{error}</span>
                     </div>
                 )}
-
-                <form onSubmit={handleAuth} className="space-y-4">
+                
+                <form onSubmit={handleAuth} className="space-y-5">
+                    
                     {isSignUp && (
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-1">Name</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-100 border-transparent rounded-lg focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all"
-                                placeholder="Your display name"
-                                required={isSignUp}
-                            />
+                        <div className="space-y-1.5">
+                            <label className="block text-sm font-bold text-slate-700 ml-1">Display Name</label>
+                            <div className="relative group">
+                                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors w-5 h-5" />
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-slate-700 font-medium"
+                                    placeholder="Jane Doe"
+                                    required={isSignUp}
+                                />
+                            </div>
                         </div>
                     )}
 
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 bg-slate-100 border-transparent rounded-lg focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all"
-                            placeholder="you@email.com"
-                            required
-                        />
+                    <div className="space-y-1.5">
+                        <label className="block text-sm font-bold text-slate-700 ml-1">Email Address</label>
+                        <div className="relative group">
+                            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors w-5 h-5" />
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-slate-700 font-medium"
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 bg-slate-100 border-transparent rounded-lg focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all"
-                            placeholder="••••••••"
-                            required
-                            minLength={8}
-                        />
+                    <div className="space-y-1.5">
+                        <label className="block text-sm font-bold text-slate-700 ml-1">Password</label>
+                        <div className="relative group">
+                            <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors w-5 h-5" />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-slate-700 font-medium"
+                                placeholder="••••••••"
+                                required
+                                minLength={8}
+                            />
+                        </div>
                     </div>
+
+                    {isSignUp && (
+                        <div className="space-y-1.5">
+                            <label className="block text-sm font-bold text-slate-700 ml-1">Confirm Password</label>
+                            <div className="relative group">
+                                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors w-5 h-5" />
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-slate-700 font-medium"
+                                    placeholder="••••••••"
+                                    required={isSignUp}
+                                    minLength={8}
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black tracking-wide py-3.5 px-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 shadow-lg shadow-emerald-600/20 active:scale-[0.98]"
                     >
                         {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
                     </button>
                 </form>
 
-                <div className="mt-6 text-center pt-4 border-t border-slate-100">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setIsSignUp(!isSignUp);
-                            setError('');
-                        }}
-                        className="text-slate-500 hover:text-emerald-600 font-medium text-sm transition-colors"
-                    >
-                        {isSignUp
-                            ? 'Already have an account? Sign in'
-                            : 'Need an account? Sign up'}
-                    </button>
+                <div className="mt-8 text-center pt-6 border-t border-slate-100">
+                    <p className="text-slate-500 text-sm">
+                        {isSignUp ? 'Already have an account?' : "Don't have an account yet?"}{' '}
+                        <button
+                            type="button"
+                            onClick={toggleMode}
+                            className="text-emerald-600 hover:text-emerald-700 font-bold transition-colors outline-none focus:underline"
+                        >
+                            {isSignUp ? 'Sign in here' : 'Sign up for free'}
+                        </button>
+                    </p>
                 </div>
+
             </div>
         </div>
     );

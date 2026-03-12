@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { FiUser, FiLock, FiUnlock } from 'react-icons/fi';
-import ExpandableText from './ExpandableText';
-import EngagementBar from './EngagementBar';
+import ExpandableText from '@/components/general/ExpandableText';
+import EngagementBar from '@/components/general/EngagementBar';
 
 interface ContentCardProps {
     id?: string;
@@ -15,6 +15,7 @@ interface ContentCardProps {
     status?: string;
     badgeLabel?: string;
     readOnlyEngagement?: boolean;
+    visualElement?: React.ReactNode;
 }
 
 export default function ContentCard({ 
@@ -26,7 +27,8 @@ export default function ContentCard({
     authorName, 
     status,
     badgeLabel,
-    readOnlyEngagement = false
+    readOnlyEngagement = false,
+    visualElement
 }: ContentCardProps) {
     
     const isClosed = status?.toLowerCase() === 'closed';
@@ -73,6 +75,12 @@ export default function ContentCard({
                             <span>{isClosed ? 'Closed' : 'Open'}</span>
                         </div>
                     )}
+                </div>
+            )}
+
+            {visualElement && (
+                <div className="relative z-10 w-full my-4 pointer-events-auto">
+                    {visualElement}
                 </div>
             )}
 

@@ -2,6 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import ContentCard from '@/components/general/ContentCard';
+import DynamicChartWrapper from '../charts/DynamicChartWrapper';
 
 export default async function PopularArticles() {
     let topIds: string[] = [];
@@ -47,7 +48,8 @@ export default async function PopularArticles() {
             status,
             "authorName": author->name,
             publishedAt,
-            "fullText": pt::text(body)
+            "fullText": pt::text(body),
+            "chartBlock": body[_type == "dataVisualizer"][0]
         }
     `;
 
@@ -80,7 +82,7 @@ export default async function PopularArticles() {
                 </h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6">
                 {posts.map((post: any) => (
                     <ContentCard 
                     key={post._id}
@@ -91,6 +93,11 @@ export default async function PopularArticles() {
                     text={post.fullText}
                     authorName={post.authorName}
                     status={post.status}
+                    visualElement={
+                        post.chartBlock ? (
+                            <DynamicChartWrapper blockData={post.chartBlock} isCompact={true} />
+                        ) : null
+                    }
                 />
                 ))}
             </div>

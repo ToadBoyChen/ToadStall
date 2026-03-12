@@ -1,7 +1,7 @@
 import ChartRenderer from './ChartRenderer';
 
-export default async function DynamicChartWrapper({ blockData }: { blockData: any }) {
-  let finalData: any[] = [];
+export default async function DynamicChartWrapper({ blockData, isCompact = false }: { blockData: any, isCompact?: boolean }) {
+    let finalData: any[] = [];
 
   if (blockData.dataSource === 'manual' && blockData.chartData) {
     finalData = blockData.chartData;
@@ -33,10 +33,11 @@ export default async function DynamicChartWrapper({ blockData }: { blockData: an
   }
 
   return (
-    <div className="my-10 p-2 rounded-2xl border border-slate-200 shadow-md">
-      <ChartRenderer type={blockData.chartType} data={finalData} />
+    <div className={isCompact ? "w-full h-48 mt-2 relative" : "my-10 p-2 rounded-2xl border border-slate-200 shadow-md h-96 w-full relative"}>
       
-      {blockData.caption && (
+      <ChartRenderer type={blockData.chartType} data={finalData} isCompact={isCompact} />
+      
+      {!isCompact && blockData.caption && (
         <p className="text-center text-sm text-slate-500 mt-6 italic">
           {blockData.caption}
         </p>

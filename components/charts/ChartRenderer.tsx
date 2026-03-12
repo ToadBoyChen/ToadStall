@@ -17,17 +17,24 @@ import {
 
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export default function ChartRenderer({ type, data }: { type: string; data: any[] }) {
+export default function ChartRenderer({ type, data, isCompact = false }: { type: string; data: any[], isCompact?: boolean }) {
   if (!data || data.length === 0) return <p className="text-slate-500 text-center">No data available</p>;
+
+  const chartMargin = isCompact 
+    ? { top: 10, right: 10, left: -20, bottom: 0 } 
+    : { top: 20, right: 20, left: -20, bottom: 0 };
 
   const renderChart = () => {
     switch (type) {
       case "bar":
         return (
-          <BarChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+          <BarChart data={data} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-            <XAxis dataKey="label" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+            
+            <XAxis dataKey="label" stroke="#64748b" fontSize={isCompact ? 10 : 12} tickLine={false} axisLine={false} />
+            
+            {!isCompact && <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />}
+            
             <Tooltip
               cursor={{ fill: '#f1f5f9' }}
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
@@ -38,10 +45,12 @@ export default function ChartRenderer({ type, data }: { type: string; data: any[
 
       case "line":
         return (
-          <LineChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+          <LineChart data={data} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-            <XAxis dataKey="label" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+            
+            <XAxis dataKey="label" stroke="#64748b" fontSize={isCompact ? 10 : 12} tickLine={false} axisLine={false} />
+            {!isCompact && <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />}
+            
             <Tooltip
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
             />
@@ -58,8 +67,8 @@ export default function ChartRenderer({ type, data }: { type: string; data: any[
             />
             <Pie
               data={data}
-              innerRadius={type === "doughnut" ? 60 : 0}
-              outerRadius={100}
+              innerRadius={type === "doughnut" ? (isCompact ? 40 : 60) : 0}
+              outerRadius={isCompact ? 60 : 100}
               paddingAngle={type === "doughnut" ? 5 : 0}
               dataKey="value"
               nameKey="label"
@@ -78,7 +87,7 @@ export default function ChartRenderer({ type, data }: { type: string; data: any[
   };
 
   return (
-    <div className="w-full h-100">
+    <div className="w-full h-full min-h-30">
       <ResponsiveContainer width="100%" height="100%">
         {renderChart()}
       </ResponsiveContainer>
