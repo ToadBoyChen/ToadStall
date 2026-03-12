@@ -1,5 +1,12 @@
 import { defineType, defineArrayMember, defineField } from 'sanity'
-import { ImageIcon, SearchIcon } from '@sanity/icons' // Added SearchIcon for the explorer
+import { ImageIcon, SearchIcon } from '@sanity/icons'
+
+import worldBankIndicators from '@/lib/worldBankIndicators.json';
+
+const sanityIndicatorOptions = worldBankIndicators.map((ind: any) => ({
+    title: ind.label,
+    value: ind.id
+}));
 
 export const blockContentType = defineType({
     title: 'Block Content',
@@ -57,6 +64,7 @@ export const blockContentType = defineType({
             ]
         }),
 
+        // 1. The Static Data Visualizer Block
         defineArrayMember({
             type: 'object',
             name: 'dataVisualizer',
@@ -68,7 +76,6 @@ export const blockContentType = defineType({
                     type: 'string',
                     options: { list: ['bar', 'line', 'pie', 'doughnut'] }
                 }),
-
                 defineField({
                     name: 'dataSource',
                     title: 'Data Source',
@@ -76,7 +83,7 @@ export const blockContentType = defineType({
                     options: {
                         list: [
                             { title: 'Manual Entry', value: 'manual' },
-                            { title: 'Live HDX HAPI', value: 'hdx' }
+                            { title: 'World Bank API', value: 'worldbank' }
                         ],
                         layout: 'radio'
                     },
@@ -86,9 +93,9 @@ export const blockContentType = defineType({
                 defineField({
                     name: 'chartData',
                     title: 'Chart Series',
-                    description: 'Add a series (e.g., "Cats" or "Revenue"), then add data points to it.',
+                    description: 'Add a series (e.g., "Revenue"), then add data points to it.',
                     type: 'array',
-                    hidden: ({ parent }) => parent?.dataSource === 'hdx',
+                    hidden: ({ parent }) => parent?.dataSource === 'worldbank',
                     of: [
                         defineArrayMember({
                             type: 'object',
@@ -96,13 +103,13 @@ export const blockContentType = defineType({
                             fields: [
                                 defineField({
                                     name: 'seriesName',
-                                    title: 'Series Name (e.g., "Cats")',
+                                    title: 'Series Name',
                                     type: 'string',
                                     validation: Rule => Rule.required()
                                 }),
                                 defineField({
                                     name: 'dataPoints',
-                                    title: 'Data Points (X and Y values)',
+                                    title: 'Data Points',
                                     type: 'array',
                                     of: [
                                         defineArrayMember({
@@ -110,7 +117,7 @@ export const blockContentType = defineType({
                                             fields: [
                                                 defineField({
                                                     name: 'label',
-                                                    title: 'X-Axis Label (e.g., "Jan" or "2026")',
+                                                    title: 'X-Axis Label (e.g., "2026")',
                                                     type: 'string',
                                                     validation: Rule => Rule.required()
                                                 }),
@@ -121,52 +128,67 @@ export const blockContentType = defineType({
                                                     validation: Rule => Rule.required()
                                                 })
                                             ],
-                                            preview: {
-                                                select: { title: 'label', subtitle: 'value' }
-                                            }
+                                            preview: { select: { title: 'label', subtitle: 'value' } }
                                         })
                                     ]
                                 })
                             ],
                             preview: {
                                 select: { title: 'seriesName' },
-                                prepare({ title }) {
-                                    return { title: title || 'Unnamed Series' }
-                                }
+                                prepare({ title }) { return { title: title || 'Unnamed Series' } }
                             }
                         })
                     ]
                 }),
 
+                // World Bank API Fields
                 defineField({
-                    name: 'hdxEndpoint',
-                    title: 'HDX Dataset',
+                    name: 'wbIndicator',
+                    title: 'World Bank Indicator',
                     type: 'string',
-                    hidden: ({ parent }) => parent?.dataSource !== 'hdx',
+                    hidden: ({ parent }) => parent?.dataSource !== 'worldbank',
                     options: {
-                        list: [
-                            { title: 'Internally Displaced Persons', value: '/api/v2/affected-people/idps' },
-                            { title: 'Food Prices', value: '/api/v2/food-security-nutrition-poverty/food-prices-market-monitor' },
-                            { title: 'Conflict Events', value: '/api/v2/coordination-context/conflict-events' }
-                        ]
+                        list: sanityIndicatorOptions
                     }
                 }),
-
                 defineField({
-                    name: 'locationName',
-                    title: 'Country / Location',
+                    name: 'wbCountry',
+                    title: 'Country Code (ISO3)',
                     type: 'string',
-                    description: 'e.g., Mali or Somalia',
-                    hidden: ({ parent }) => parent?.dataSource !== 'hdx',
+                    description: 'e.g., USA, GBR, WLD (for Global). Defaults to WLD if empty.',
+                    hidden: ({ parent }) => parent?.dataSource !== 'worldbank',
+                }),
+                defineField({
+                    name: 'startYear',
+                    title: 'Start Year (Optional)',
+                    type: 'string',
+                    description: 'e.g., 2010',
+                    hidden: ({ parent }) => parent?.dataSource !== 'worldbank',
+                }),
+                defineField({
+                    name: 'endYear',
+                    title: 'End Year (Optional)',
+                    type: 'string',
+                    description: 'e.g., 2024',
+                    hidden: ({ parent }) => parent?.dataSource !== 'worldbank',
+                }),
+
+                // Shared Fields
+                defineField({
+                    name: 'caption',
+                    title: 'Chart Caption (Optional)',
+                    type: 'string',
+                    description: 'Displays a small italicized note under the chart.'
                 })
             ]
         }),
 
-        // The Interactive HDX Explorer Block
+        // 2. The Interactive World Bank Explorer Block (Focused Mode Only)
         defineArrayMember({
             type: 'object',
-            name: 'hdxExplorer',
-            title: 'Interactive HDX Explorer',
+            name: 'worldBankExplorer',
+            title: 'Interactive Data Explorer',
+            icon: SearchIcon,
             fields: [
                 defineField({
                     name: 'title',
@@ -174,55 +196,57 @@ export const blockContentType = defineType({
                     type: 'string',
                 }),
                 defineField({
-                    name: 'displayMode',
-                    title: 'Display Mode',
+                    name: 'defaultChartType',
+                    title: 'Default Chart Type',
                     type: 'string',
-                    description: 'General gives the user full control. Guided locks the indicator and country, but lets them adjust the years.',
                     options: {
                         list: [
-                            { title: 'General Explorer (Full Freedom)', value: 'general' },
-                            { title: 'Guided Explorer (Lock to Specific Data)', value: 'guided' }
-                        ],
-                        layout: 'radio'
+                            { title: 'Line Chart', value: 'line' },
+                            { title: 'Bar Chart', value: 'bar' },
+                            { title: 'Pie Chart', value: 'pie' },
+                            { title: 'Doughnut Chart', value: 'doughnut' }
+                        ]
                     },
-                    initialValue: 'general'
+                    initialValue: 'line'
                 }),
                 defineField({
-                    name: 'defaultIndicator',
-                    title: 'Data Indicator to display',
+                    name: 'indicator',
+                    title: 'Data Indicator',
                     type: 'string',
-                    hidden: ({ parent }) => parent?.displayMode !== 'guided',
+                    validation: Rule => Rule.required(),
                     options: {
-                        list: [
-                            { title: 'Internally Displaced Persons', value: 'idps' },
-                            { title: 'Refugees', value: 'refugees' },
-                            { title: 'Returnees', value: 'returnees' },
-                            { title: 'Food Prices', value: 'food-prices' },
-                            { title: 'Conflict Events', value: 'conflict' },
-                            { title: 'Poverty Rate', value: 'poverty' },
-                        ]
+                        list: sanityIndicatorOptions
                     }
                 }),
                 defineField({
-                    name: 'defaultCountryCode',
-                    title: 'Default Country Code (ISO3)',
+                    name: 'countryCode',
+                    title: 'Country Code (ISO3)',
                     type: 'string',
-                    description: 'e.g., SOM, MLI, AFG. Defaults to SOM if left blank.',
+                    validation: Rule => Rule.required(),
+                    description: 'e.g., USA, GBR, CHN. Use WLD for Global Aggregate.',
                 }),
                 defineField({
-                    name: 'defaultStartYear',
+                    name: 'startYear',
                     title: 'Default Start Year',
                     type: 'string',
-                    initialValue: '2020'
+                    initialValue: '2000'
                 }),
                 defineField({
-                    name: 'defaultEndYear',
+                    name: 'endYear',
                     title: 'Default End Year',
                     type: 'string',
-                    initialValue: '2026'
+                    initialValue: new Date().getFullYear().toString()
                 })
-            ]
+            ],
+            preview: {
+                select: { title: 'title', indicator: 'indicator', country: 'countryCode' },
+                prepare({ title, indicator, country }) {
+                    return {
+                        title: title || 'Data Explorer Widget',
+                        subtitle: `${indicator} • ${country}`
+                    }
+                }
+            }
         }),
-
     ],
 })

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/charts/DynamicChartWrapper';
-import HDXDataExplorer from '@/components/charts/HDXDataExplorer';
+import DataExplorer from '@/components/charts/DataExplorer';
 
 export const sharedPortableTextComponents = {
     types: {
@@ -9,7 +9,7 @@ export const sharedPortableTextComponents = {
             return <DynamicChartWrapper blockData={value} />;
         },
 
-        hdxExplorer: ({ value }: any) => {
+        worldBankExplorer: ({ value }: any) => {
             return (
                 <div className="my-12">
                     {value.title && (
@@ -17,12 +17,12 @@ export const sharedPortableTextComponents = {
                             {value.title}
                         </h3>
                     )}
-                    <HDXDataExplorer
-                        displayMode={value.displayMode}
-                        defaultIndicator={value.defaultIndicator}
-                        defaultCountryCode={value.defaultCountryCode}
-                        defaultStartYear={value.defaultStartYear}
-                        defaultEndYear={value.defaultEndYear}
+                    <DataExplorer
+                        indicator={value.indicator}
+                        countryCode={value.countryCode}
+                        startYear={value.startYear}
+                        endYear={value.endYear}
+                        defaultChartType={value.defaultChartType}
                     />
                 </div>
             );

@@ -25,34 +25,42 @@ export default async function DynamicChartWrapper({ blockData, isCompact = false
         finalData = Object.values(formattedDataMap);
     }
 
-    if (blockData.dataSource === 'hdx' && blockData.hdxEndpoint) {
+    if (blockData.dataSource === 'worldbank' && blockData.wbIndicator) {
         try {
-            const hdxUrl = `https://hapi.humdata.org${blockData.hdxEndpoint}?location_name=${blockData.locationName || ''}`;
+            const countryCode = blockData.wbCountry || 'ALL';
 
-            const res = await fetch(hdxUrl, {
-                headers: {
-                    'X-HDX-HAPI-APP-IDENTIFIER': process.env.HDX_APP_IDENTIFIER || 'placeholder-id'
-                },
-                next: { revalidate: 3600 }
-            });
+            const dateQuery = (blockData.startYear && blockData.endYear)
+                ? `&date=${blockData.startYear}:${blockData.endYear}`
+                : '';
+
+            const wbUrl = `https://api.worldbank.org/v2/country/${countryCode}/indicator/${blockData.wbIndicator}?format=json&per_page=100${dateQuery}`;
+
+            const res = await fetch(wbUrl, { next: { revalidate: 3600 } });
 
             if (res.ok) {
-                const hdxResponse = await res.json();
-                finalData = hdxResponse.data.map((item: any) => ({
-                    label: item.reporting_round || item.date || item.reference_period_start,
-                    value: item.population || item.price || item.events
-                }));
+                const wbResponse = await res.json();
+
+                if (Array.isArray(wbResponse) && wbResponse.length > 1 && Array.isArray(wbResponse[1])) {
+                    const rawData = wbResponse[1];
+
+                    finalData = rawData
+                        .filter((item: any) => item.value !== null)
+                        .sort((a: any, b: any) => parseInt(a.date) - parseInt(b.date))
+                        .map((item: any) => ({
+                            label: item.date,
+                            value: item.value
+                        }));
+                }
             } else {
-                console.error("HDX API Error:", res.statusText);
+                console.error("World Bank API Error:", res.statusText);
             }
         } catch (error) {
-            console.error("Failed to fetch HDX data:", error);
+            console.error("Failed to fetch World Bank data:", error);
         }
     }
 
     return (
         <div className={isCompact ? "w-full h-48 mt-2 relative" : "my-10 p-2 rounded-2xl border border-slate-200 shadow-md h-96 w-full relative"}>
-
             <ChartRenderer type={blockData.chartType} data={finalData} isCompact={isCompact} />
 
             {!isCompact && blockData.caption && (
