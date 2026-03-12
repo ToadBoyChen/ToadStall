@@ -63,10 +63,8 @@ export default function HDXDataExplorer({
       setError("");
 
       try {
-        // Notice we are now passing selectedCountry.code instead of .name
         const response = await getHDXData(selectedIndicator.endpoint, selectedCountry.code);
         
-        // If the server action explicitly failed, show the raw error
         if (!response.success) {
             setChartData([]);
             setError(response.error || "Unknown Server Error");
@@ -74,7 +72,6 @@ export default function HDXDataExplorer({
             return;
         }
 
-        // If it succeeded but the UN had no data, show this specific message
         if (!response.data || response.data.length === 0) {
           setChartData([]);
           setError(`Success, but UN API returned 0 records for ${selectedCountry.code} between ${startYear}-${endYear}.`);
