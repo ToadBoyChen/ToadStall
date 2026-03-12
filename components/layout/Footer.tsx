@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-row justify-between gap-12 mb-16">
                     
-                    <div className="col-span-1 md:col-span-1">
+                    <div className="col-span-1 md:col-span-1 w-1/2">
                         <h2 className="font-black text-3xl tracking-tighter text-slate-900 mb-4">
                             ToadStall
                         </h2>
@@ -19,7 +19,7 @@ export default function Footer() {
                     </div>
 
                     
-                    <div>
+                    <div className='w-1/2 flex flex-col items-end'>
                         <h4 className="text-slate-900 font-black mb-6 uppercase tracking-[0.2em] text-[10px]">Connect</h4>
                         <ul className="space-y-4">
                             <li>
