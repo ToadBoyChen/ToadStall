@@ -1,7 +1,5 @@
 'use server';
 
-export const runtime = 'edge';
-
 export async function getHDXData(endpoint: string, countryCode: string) {
     try {
         const url = `https://hapi.humdata.org${endpoint}?location_code=${countryCode}`;
