@@ -4,8 +4,15 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { account, databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Models, Query } from 'appwrite';
 
+interface ProfileDocument extends Models.Document {
+    userID: string;
+    bio?: string;
+    avatarURL?: string;
+    isVerified: boolean;
+}
+
 interface UserWithProfile extends Models.User<Models.Preferences> {
-    profile?: Models.Document; 
+    profile?: ProfileDocument;
 }
 
 interface AuthContextType {
@@ -18,8 +25,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
     user: null,
     isLoading: true,
-    logout: async () => {},
-    checkUser: async () => {}, 
+    logout: async () => { },
+    checkUser: async () => { },
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -33,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function checkUser() {
         try {
             const currentAccount = await account.get();
-            
+
             try {
                 const profileRes = await databases.listDocuments(
                     appwriteDatabaseId,
@@ -41,15 +48,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     [Query.equal('userID', currentAccount.$id)]
                 );
 
-                const userProfile = profileRes.documents[0] || null;
-                
+                let userProfile = (profileRes.documents[0] as unknown as ProfileDocument) || null;
+
+                if (currentAccount.emailVerification && userProfile && !userProfile.isVerified) {
+                    userProfile = await databases.updateDocument(
+                        appwriteDatabaseId,
+                        process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
+                        userProfile.$id,
+                        { isVerified: true }
+                    ) as unknown as ProfileDocument;
+                }
+
                 setUser({
                     ...currentAccount,
-                    profile: userProfile 
+                    profile: userProfile
                 });
             } catch (profileError) {
                 console.error("Failed to load user profile data", profileError);
-                setUser(currentAccount); 
+                setUser(currentAccount);
             }
 
         } catch (error) {

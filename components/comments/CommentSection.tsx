@@ -4,9 +4,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query, ID } from 'appwrite';
-import { FiMessageSquare, FiChevronDown } from 'react-icons/fi';
+import { FiMessageSquare, FiChevronDown, FiLock } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
-import CommentItem from './CommentItem'; // Import the new component
+import CommentItem from './CommentItem';
 
 export default function CommentSection({ postId }: { postId: string }) {
     const { user } = useAuth();
@@ -18,6 +18,9 @@ export default function CommentSection({ postId }: { postId: string }) {
     
     const [visibleCount, setVisibleCount] = useState(3); 
     const submitLock = useRef(false);
+
+    const isVerified = user?.profile?.isVerified === true;
+    const canComment = user && isVerified;
 
     const fetchComments = useCallback(async () => {
         if (!postId) return;
@@ -49,6 +52,12 @@ export default function CommentSection({ postId }: { postId: string }) {
             return;
         }
 
+        // Hard stop if not verified
+        if (!isVerified) {
+            alert("Please verify your email in your profile to comment.");
+            return;
+        }
+
         if (!newComment.trim() || submitLock.current) return;
 
         submitLock.current = true;
@@ -67,7 +76,8 @@ export default function CommentSection({ postId }: { postId: string }) {
                     userId: user.$id,
                     body: newComment,
                     authorName: user.name,
-                    authorAvatarURL: userAvatarUrl
+                    authorAvatarURL: userAvatarUrl,
+                    authorIsVerified: isVerified // Storing this so it shows on the CommentItem
                 }
             );
 
@@ -91,21 +101,48 @@ export default function CommentSection({ postId }: { postId: string }) {
                 </div>
             </div>
 
+            {/* Comment Form */}
             <div className="mb-24">
-                <form onSubmit={submitComment}>
+                <form onSubmit={submitComment} className="relative">
                     <textarea
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder={user ? "Add to the discussion..." : "Sign in to join the discussion..."}
-                        disabled={!user || isSubmitting}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all disabled:opacity-50"
+                        placeholder={
+                            !user 
+                            ? "Sign in to join the discussion..." 
+                            : !isVerified 
+                            ? "Verification required to comment..." 
+                            : "Add to the discussion..."
+                        }
+                        disabled={!canComment || isSubmitting}
+                        className={`w-full border rounded-2xl p-4 text-slate-800 transition-all 
+                            ${!canComment ? 'bg-slate-100 border-slate-200 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent'}
+                        `}
                         rows={3}
                     />
+                    
+                    {/* Overlay for Unverified Users */}
+                    {user && !isVerified && (
+                        <div className="mt-2 flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                            <FiLock className="shrink-0" />
+                            <p className="text-sm font-bold">
+                                Your account is unverified. Please 
+                                <button 
+                                    onClick={() => router.push('/profile')}
+                                    className="mx-1 underline hover:text-amber-700"
+                                >
+                                    verify your email
+                                </button> 
+                                to participate.
+                            </p>
+                        </div>
+                    )}
+
                     <div className="mt-3 flex justify-end">
                         <button
                             type="submit"
-                            disabled={!user || !newComment.trim() || isSubmitting}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!canComment || !newComment.trim() || isSubmitting}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {isSubmitting ? 'Posting...' : 'Post Comment'}
                         </button>
@@ -113,15 +150,15 @@ export default function CommentSection({ postId }: { postId: string }) {
                 </form>
             </div>
 
+            {/* Comments List */}
             <div className="space-y-6">
                 <h2 className="text-6xl font-black text-white tracking-tight mb-4">
                     Comments
                 </h2>
                 {comments.length === 0 ? (
-                    <p className="text-slate-600 text-center py-8 bg-white/80 rounded-2xl">Be the first to share your thoughts.</p>
+                    <p className="text-slate-600 text-center py-8 bg-white/80 rounded-2xl font-medium">Be the first to share your thoughts.</p>
                 ) : (
                     <>
-                        {/* Render the extracted CommentItem component */}
                         {comments.slice(0, visibleCount).map((comment) => (
                             <CommentItem key={comment.$id} comment={comment} />
                         ))}

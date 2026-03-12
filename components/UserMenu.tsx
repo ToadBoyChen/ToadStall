@@ -27,7 +27,7 @@ export default function UserMenu() {
         return (
             <Link 
                 href="/login" 
-                className="text-sm font-bold text-slate-700 hover:text-emerald-500 bg-white px-5 py-2.5 rounded-full transition-colors shadow-sm"
+                className="text-md font-bold hover:text-emerald-500 rounded-full flex items-center gap-3 p-1 pr-4 transition-all"
             >
                 Sign In
             </Link>
@@ -42,7 +42,7 @@ export default function UserMenu() {
         <div className="relative" ref={menuRef}>
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-3 p-1 pr-4 bg-white rounded-full shadow-sm hover:shadow-md transition-all border border-slate-100"
+                className="flex items-center gap-3 p-1 pr-4 transition-all"
             >
                 <div className="w-9 h-9 flex items-center justify-center bg-emerald-500 text-white font-bold rounded-full overflow-hidden shrink-0">
                     {avatarUrl ? (

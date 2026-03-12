@@ -2,59 +2,67 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import React from 'react';
-import { Home, ChevronRight } from 'lucide-react';
+import { HiHome, HiChevronRight } from 'react-icons/hi2';
+import { useTransition, animated } from '@react-spring/web';
 
 export default function Breadcrumbs() {
     const pathname = usePathname();
-    if (pathname === '/') return null;
-    const segments = pathname.split('/').filter((segment) => segment !== '');
+    const segments = (pathname || '').split('/').filter(Boolean).map((segment, index, arr) => ({
+        segment,
+        href: `/${arr.slice(0, index + 1).join('/')}`,
+        isLast: index === arr.length - 1
+    }));
+
+    const transitions = useTransition(segments, {
+        keys: (item) => item.href,
+        from: { opacity: 0, transform: 'translateX(-10px)' },
+        enter: { opacity: 1, transform: 'translateX(0px)' },
+        leave: { opacity: 0, transform: 'translateX(10px)' },
+        config: { tension: 300, friction: 25 }
+    });
 
     return (
-        <nav aria-label="Breadcrumb" className="relative z-20 w-full max-w-5xl mx-auto px-6 pt-24 pb-4">
-            <ol className="flex items-center space-x-1.5 flex-wrap">
+        <div aria-label="Breadcrumb" className="flex items-center overflow-hidden h-8 z-9999">
+            <ol className="flex items-center gap-1 text-xs sm:text-sm font-medium">
                 <li>
                     <Link 
                         href="/" 
-                        className="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-sm font-medium text-white mix-blend-difference hover:text-emerald-400 hover:bg-emerald-400/10 transition-all duration-200"
+                        className="text-slate-400 hover:text-emerald-500 transition-all duration-300 hover:scale-110 active:scale-95 flex items-center"
                     >
-                        <Home className="w-4 h-4" />
-                        <span className="hidden sm:inline">Home</span>
+                        <HiHome className="w-4 h-4" />
+                        <span className="sr-only">Home</span>
                     </Link>
                 </li>
 
-                {segments.map((segment, index) => {
-                    const href = `/${segments.slice(0, index + 1).join('/')}`;
-                    const isLast = index === segments.length - 1;
-                    
-                    const formattedSegment = segment
+                {transitions((style, item) => {
+                    const formattedSegment = item.segment
                         .replace(/-/g, ' ')
                         .replace(/\b\w/g, (char) => char.toUpperCase());
 
                     return (
-                        <React.Fragment key={href}>
-                            <li>
-                                <ChevronRight className="w-4 h-4 text-white mix-blend-difference shrink-0" />
-                            </li>
+                        <animated.li 
+                            style={style} 
+                            className="flex items-center gap-1"
+                        >
+                            <HiChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
                             
-                            <li>
-                                {isLast ? (
-                                    <div className="flex items-center px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-sm font-semibold text-emerald-400 shadow-sm backdrop-blur-sm cursor-default">
-                                        {formattedSegment}
-                                    </div>
-                                ) : (
-                                    <Link 
-                                        href={href} 
-                                        className="flex items-center px-2 py-1.5 rounded-md text-sm font-medium text-white mix-blend-difference hover:text-emerald-400 hover:bg-emerald-400/10 transition-all duration-200"
-                                    >
-                                        {formattedSegment}
-                                    </Link>
-                                )}
-                            </li>
-                        </React.Fragment>
+                            {item.isLast ? (
+                                <span className="text-slate-900 font-bold truncate max-w-25 sm:max-w-50 block">
+                                    {formattedSegment}
+                                </span>
+                            ) : (
+                                <Link 
+                                    href={item.href} 
+                                    className="text-slate-400 hover:text-slate-600 transition-colors duration-200 relative group block"
+                                >
+                                    {formattedSegment}
+                                    <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300 group-hover:w-full" />
+                                </Link>
+                            )}
+                        </animated.li>
                     );
                 })}
             </ol>
-        </nav>
+        </div>
     );
 }

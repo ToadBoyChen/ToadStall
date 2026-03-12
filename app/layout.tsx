@@ -7,7 +7,7 @@ import Background from "@/components/layout/Background";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { Analytics } from "@vercel/analytics/next"
 
-import { AuthProvider } from "@/context/AuthContext"; 
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,14 +32,15 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}>
-                <Analytics/>
+                <Analytics />
                 <AuthProvider>
                     <Nav />
                     <Background />
 
                     <div className="flex flex-col">
-                        <Breadcrumb />
-                        {children}
+                        <div className="my-32">
+                            {children}
+                        </div>
                         <Footer />
                     </div>
                 </AuthProvider>
