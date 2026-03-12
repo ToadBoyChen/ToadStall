@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
-import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import DynamicChartWrapper from '@/components/charts/DynamicChartWrapper';
 import EngagementBar from '@/components/EngagementBar';
 
 const SINGLE_ARTICLE_QUERY = `*[ _type == "article" && slug.current == $slug ][0] {

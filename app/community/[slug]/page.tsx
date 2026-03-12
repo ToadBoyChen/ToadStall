@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
-import DynamicChartWrapper from '@/components/DynamicChartWrapper';
+import DynamicChartWrapper from '@/components/charts/DynamicChartWrapper';
 import EngagementBar from '@/components/EngagementBar';
 
 // 1. Updated _type to "community" and added the "status" field

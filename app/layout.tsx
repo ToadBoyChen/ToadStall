@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
-import Background from "@/components/Background";
-import Breadcrumb from "@/components/Breadcrumb";
-import ScrollIndicator from "@/components/ScrollIndicator";
+import Nav from "@/components/layout/Nav";
+import Footer from "@/components/layout/Footer";
+import Background from "@/components/layout/Background";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 
-// 1. Import the AuthProvider
 import { AuthProvider } from "@/context/AuthContext"; 
 
 const geistSans = Geist({
@@ -34,11 +32,10 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}>
                 <AuthProvider>
-                    <ScrollIndicator />
                     <Nav />
                     <Background />
 
-                    <div className="flex flex-col min-h-screen">
+                    <div className="flex flex-col">
                         <Breadcrumb />
                         {children}
                         <Footer />

@@ -1,5 +1,5 @@
-import HackerText from "./HackerText";
-import UserMenu from "./UserMenu";
+import HackerText from "@/components/animations/HackerText";
+import UserMenu from "@/components/UserMenu";
 
 export default function Nav() {
     return (

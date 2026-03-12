@@ -1,7 +1,7 @@
 'use client';
 
-import YesNo from './YesNo';
-import CommentSection from './CommentSection';
+import YesNo from './likes/YesNo';
+import CommentSection from './comments/CommentSection';
 
 export default function EngagementBar({ postId }: { postId: string }) {
     return (

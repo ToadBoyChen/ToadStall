@@ -1,10 +1,10 @@
-import AboutMe from "@/components/AboutMe";
-import BestTools from "@/components/BestTools";
-import Menu from "@/components/Menu";
-import PopularDiscussions from "@/components/PopularDiscussions";
-import RecentArticles from "@/components/RecentArticles";
-import RecentData from "@/components/RecentData";
-import Search from "@/components/Search";
+import AboutMe from "@/components/sections/AboutMe";
+import BestTools from "@/components/sections/BestTools";
+import Menu from "@/components/sections/Menu";
+import PopularDiscussions from "@/components/sections/PopularDiscussions";
+import RecentArticles from "@/components/sections/RecentArticles";
+import RecentData from "@/components/sections/RecentData";
+import Search from "@/components/sections/Search";
 
 export default function Home() {
     return (
