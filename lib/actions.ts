@@ -12,13 +12,14 @@ export async function getHDXData(endpoint: string, countryName: string) {
         });
 
         if (!res.ok) {
-            throw new Error(`HDX API responded with status: ${res.status}`);
+            return { success: false, error: `API Error: ${res.status}` };
         }
 
-        return await res.json();
+        const json = await res.json();
+        return { success: true, data: json.data };
         
     } catch (error) {
         console.error("HDX Fetch Error:", error);
-        throw new Error("Failed to fetch HDX data");
+        return { success: false, error: "Failed to fetch HDX data" };
     }
 }
