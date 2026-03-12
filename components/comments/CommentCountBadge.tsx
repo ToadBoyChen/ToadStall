@@ -5,7 +5,12 @@ import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { FiMessageSquare } from 'react-icons/fi';
 
-export default function CommentCountBadge({ postId }: { postId: string }) {
+interface CommentCountBadgeProps {
+    postId: string;
+    subtle?: boolean;
+}
+
+export default function CommentCountBadge({ postId, subtle = false }: CommentCountBadgeProps) {
     const [count, setCount] = useState(0);
 
     const fetchCommentCount = useCallback(async () => {
@@ -29,6 +34,15 @@ export default function CommentCountBadge({ postId }: { postId: string }) {
     useEffect(() => {
         fetchCommentCount();
     }, [fetchCommentCount]);
+
+    if (subtle) {
+        return (
+            <div className="flex items-center gap-1.5 text-slate-400 pointer-events-none">
+                <FiMessageSquare className="w-4 h-4" />
+                <span className="font-semibold text-sm">{count}</span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center gap-2 text-slate-700 font-bold px-4 py-2 bg-slate-100 rounded-full pointer-events-none">

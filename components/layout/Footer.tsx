@@ -9,7 +9,6 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     
-                    {/* Brand Section */}
                     <div className="col-span-1 md:col-span-1">
                         <h2 className="font-black text-3xl tracking-tighter text-slate-900 mb-4 italic">
                             ToadStall
@@ -20,7 +19,6 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    {/* Links Section */}
                     <div>
                         <h4 className="text-slate-900 font-black mb-6 uppercase tracking-[0.2em] text-[10px]">Trackers</h4>
                         <ul className="space-y-4">
@@ -38,8 +36,7 @@ export default function Footer() {
                             <li><Link href="/sources" className="text-slate-500 hover:text-emerald-600 transition-colors text-sm font-semibold">Data Sources</Link></li>
                         </ul>
                     </div>
-
-                    {/* Contact & Socials */}
+                    
                     <div>
                         <h4 className="text-slate-900 font-black mb-6 uppercase tracking-[0.2em] text-[10px]">Connect</h4>
                         <ul className="space-y-4">

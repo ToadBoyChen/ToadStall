@@ -1,7 +1,7 @@
 import { client } from '@/sanity/lib/client';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
-import PostCard from '@/components/PostCard';
+import ContentCard from '@/components/ContentCard';
 
 export default async function PopularArticles() {
     let topIds: string[] = [];
@@ -43,7 +43,7 @@ export default async function PopularArticles() {
         *[ ${queryFilter} ] {
             _id,
             title,
-            slug,
+            "slug": slug.current,
             status,
             "authorName": author->name,
             publishedAt,
@@ -82,7 +82,16 @@ export default async function PopularArticles() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {posts.map((post: any) => (
-                    <PostCard key={post._id} post={post} />
+                    <ContentCard 
+                    key={post._id}
+                    id={post._id}
+                    title={post.title}
+                    href={`/community/${post.slug}`}
+                    publishedAt={post.publishedAt}
+                    text={post.fullText}
+                    authorName={post.authorName}
+                    status={post.status}
+                />
                 ))}
             </div>
         </section>

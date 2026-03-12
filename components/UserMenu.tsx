@@ -36,7 +36,6 @@ export default function UserMenu() {
 
     const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
     
-    // Safely extract the avatar URL from the profile object attached in AuthContext
     const avatarUrl = (user as any).profile?.avatarURL || null;
 
     return (

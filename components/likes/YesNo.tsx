@@ -7,7 +7,7 @@ import { Query, ID } from 'appwrite';
 import { FiThumbsUp, FiThumbsDown } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 
-export default function YesNo({ postId }: { postId: string }) {
+export default function YesNo({ postId, readOnly = false }: { postId: string, readOnly?: boolean }) {
     const { user } = useAuth();
     const router = useRouter();
 
@@ -108,6 +108,21 @@ export default function YesNo({ postId }: { postId: string }) {
             setIsVoting(false);
         }
     };
+
+    if (readOnly) {
+        return (
+            <div className="flex items-center gap-4 text-slate-400 pointer-events-none">
+                <div className="flex items-center gap-1.5">
+                    <FiThumbsUp className="w-4 h-4" />
+                    <span className="font-semibold text-sm">{upvotes}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <FiThumbsDown className="w-4 h-4" />
+                    <span className="font-semibold text-sm">{downvotes}</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center bg-white/80 rounded-full p-1 w-fit">

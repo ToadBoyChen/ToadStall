@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { FiExternalLink } from 'react-icons/fi';
-import GradientText from './GradientText';
 
 export default function AboutMe() {
     return (
