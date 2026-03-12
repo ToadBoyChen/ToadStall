@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/charts/DynamicChartWrapper';
-import EngagementBar from '@/components/EngagementBar';
+import EngagementBar from '@/components/general/EngagementBar';
 
 const SINGLE_TOOL_QUERY = `*[ _type == "tools-technical" && slug.current == $slug ][0] {
     _id,
@@ -65,11 +65,6 @@ export default async function SingleToolPage({ params }: { params: Promise<{ slu
                             <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
                                 {tool.title}
                             </h1>
-                            {tool.pricing && (
-                                <span className="mt-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1.5 rounded-md">
-                                    {tool.pricing}
-                                </span>
-                            )}
                         </div>
 
                         <div className="flex items-center gap-4 mt-6">

@@ -1,7 +1,7 @@
 import { client } from '@/sanity/lib/client';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
-import ContentCard from '@/components/ContentCard';
+import ContentCard from '@/components/general/ContentCard';
 
 export default async function PopularArticles() {
     let topIds: string[] = [];

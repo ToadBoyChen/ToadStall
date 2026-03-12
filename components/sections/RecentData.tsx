@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi';
-import ContentCard from '@/components/ContentCard';
+import ContentCard from '@/components/general/ContentCard';
 
 const RECENT_POSTS_QUERY = `
   *[ _type == "data" && defined(slug.current) ] | order(publishedAt desc) [0...6] {

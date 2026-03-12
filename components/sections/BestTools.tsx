@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi';
-import ContentCard from '@/components/ContentCard';
+import ContentCard from '@/components/general/ContentCard';
 
 const RECENT_POSTS_QUERY = `
   *[ _type == "tools-technical" && defined(slug.current) ] | order(_createdAt desc) [0...6] {
@@ -42,10 +42,9 @@ export default async function BestTools() {
                         key={post._id}
                         id={post._id}
                         title={post.title}
-                        href={`/tools/${post.slug}`}
+                        href={`/tools-technical/${post.slug}`}
                         publishedAt={post._createdAt}
                         text={post.excerpt}
-                        badgeLabel={post.pricing}
                         readOnlyEngagement={true}
                     />
                 ))}

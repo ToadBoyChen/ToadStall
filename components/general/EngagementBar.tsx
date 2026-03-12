@@ -1,8 +1,8 @@
 'use client';
 
-import YesNo from './likes/YesNo';
-import CommentSection from './comments/CommentSection';
-import CommentCountBadge from './comments/CommentCountBadge';
+import YesNo from '@/components/likes/YesNo';
+import CommentSection from '@/components/comments/CommentSection';
+import CommentCountBadge from '@/components/comments/CommentCountBadge';
 
 interface EngagementBarProps {
     postId: string;

@@ -26,14 +26,6 @@ export const toolType = defineType({
       description: 'Direct link to the tool.',
     }),
     defineField({
-      name: 'pricing',
-      title: 'Pricing Model',
-      type: 'string',
-      options: {
-        list: ['Free', 'Freemium', 'Paid', 'Open Source'],
-      },
-    }),
-    defineField({
       name: 'excerpt',
       title: 'Short Description',
       type: 'text',

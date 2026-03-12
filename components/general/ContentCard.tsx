@@ -14,7 +14,7 @@ interface ContentCardProps {
     authorName?: string;
     status?: string;
     badgeLabel?: string;
-    readOnlyEngagement?: boolean; // Added this prop
+    readOnlyEngagement?: boolean;
 }
 
 export default function ContentCard({ 
@@ -26,7 +26,7 @@ export default function ContentCard({
     authorName, 
     status,
     badgeLabel,
-    readOnlyEngagement = false // Defaults to false so existing cards remain interactive
+    readOnlyEngagement = false
 }: ContentCardProps) {
     
     const isClosed = status?.toLowerCase() === 'closed';
