@@ -45,6 +45,7 @@ export default async function RecentArticles() {
                         href={`/articles/${post.slug}`}
                         text={post.fullText}
                         authorName={post.authorName}
+                        readOnlyEngagement={true}
                     />
                 ))}
             </div>

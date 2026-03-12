@@ -44,6 +44,7 @@ export default async function RecentData() {
                         href={`/data/${post.slug}`}
                         publishedAt={post.publishedAt}
                         text={post.fullText}
+                        readOnlyEngagement={true}
                     />
                 ))}
             </div>
