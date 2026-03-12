@@ -4,13 +4,11 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 interface IntroTextProps {
     text: string;
-    spacing: boolean;
-    color?: string;
 }
 
 const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-export default function HackerText({ text, spacing, color = "text-stone-950" }: IntroTextProps) {
+export default function HackerText({ text }: IntroTextProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     
@@ -19,8 +17,6 @@ export default function HackerText({ text, spacing, color = "text-stone-950" }: 
     const [displayText, setDisplayText] = useState(textArray);
     const [isScrambling, setIsScrambling] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-
-    const spaceGap = spacing ? "gap-4 sm:gap-12 md:gap-20 lg:gap-42" : "gap-0";
 
     const scramble = useCallback(() => {
         if (intervalRef.current) clearInterval(intervalRef.current);
@@ -70,14 +66,16 @@ export default function HackerText({ text, spacing, color = "text-stone-950" }: 
 
     return (
         <div ref={containerRef} className="w-fit pointer-events-none">
-            <p className={`flex ${spaceGap} w-fit whitespace-pre`}>
+            <p className={`flex w-fit whitespace-pre`}>
                 {displayText.map((char, index) => (
                     <span 
                         key={index} 
                         className={`
                             shrink-0 transition-all duration-300
-                            ${!isVisible ? "opacity-0 scale-50" : "opacity-100 scale-100"}
-                            ${isScrambling && char !== textArray[index] ? "text-white" : color} 
+                            
+                            text-white mix-blend-difference
+
+                            ${!isVisible ? "opacity-0" : "opacity-100"} 
                         `}
                     >
                         {char === " " ? "\u00A0" : char}

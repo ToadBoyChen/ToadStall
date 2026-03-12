@@ -8,7 +8,7 @@ export async function getHDXData(endpoint: string, countryName: string) {
             headers: {
                 "X-HDX-HAPI-APP-IDENTIFIER": process.env.HDX_APP_IDENTIFIER || "toadstall-explorer"
             },
-            next: { revalidate: 3600 } 
+            cache: 'no-store' 
         });
 
         if (!res.ok) {
