@@ -20,10 +20,14 @@ export const communityType = defineType({
       options: {source: 'title', maxLength: 96},
     }),
     defineField({
-      name: 'author',
-      title: 'Started By',
-      type: 'reference',
-      to: {type: 'author'},
+      name: 'authorName',
+      title: 'Author Name',
+      type: 'string',
+    }),
+    defineField({
+      name: 'authorAppwriteId',
+      title: 'Author Appwrite ID',
+      type: 'string',
     }),
     defineField({
       name: 'status',

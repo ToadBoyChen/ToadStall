@@ -8,6 +8,7 @@ import CommentItem from '@/components/comments/CommentItem';
 import VerificationBadge from '@/components/profile/VerificationBadge';
 import { FiAlertCircle, FiCheckCircle, FiUserPlus, FiUserCheck } from 'react-icons/fi';
 import Link from 'next/link';
+import CreatePostButton from '../community/CreatePostButton';
 
 interface ProfileSectionProps {
     targetUserId: string;
@@ -416,7 +417,7 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                             <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">About</h2>
                             <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 h-[calc(100%-28px)]">
                                 {isOwnProfile && isEditing ? (
-                                    <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="w-full h-full min-h-[100px] p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-white" placeholder="Write something about yourself..." />
+                                    <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="w-full h-full min-h-25 p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-white" placeholder="Write something about yourself..." />
                                 ) : (
                                     <p className="text-slate-700 font-medium whitespace-pre-wrap">{profile.bio || "No bio yet."}</p>
                                 )}
@@ -466,6 +467,8 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
 
                 </div>
             </div>
+
+            <CreatePostButton />
 
             {/* Comments List */}
             <div className="space-y-6 mt-16">

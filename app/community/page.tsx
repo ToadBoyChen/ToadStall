@@ -1,13 +1,13 @@
 import { client } from '@/sanity/lib/client';
 import ContentCard from '@/components/general/ContentCard';
 const QUERY = `*[ _type == "community" && defined(slug.current) ] | order(publishedAt desc) {
-  _id,
-  title,
-  "slug": slug.current,
-  "authorName": author->name,
-  publishedAt,
-  "fullText": pt::text(body)
-}`;
+    _id,
+    title,
+    "slug": slug.current,
+    authorName,
+    publishedAt,
+    "fullText": pt::text(body)
+  }`;
 
 export default async function CommunityPage() {
   const posts = await client.fetch(QUERY);
