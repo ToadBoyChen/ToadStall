@@ -15,8 +15,8 @@ export default function CommentSection({ postId }: { postId: string }) {
     const [comments, setComments] = useState<any[]>([]);
     const [newComment, setNewComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const [visibleCount, setVisibleCount] = useState(3); 
+
+    const [visibleCount, setVisibleCount] = useState(3);
     const submitLock = useRef(false);
 
     const isVerified = user?.profile?.isVerified === true;
@@ -108,11 +108,11 @@ export default function CommentSection({ postId }: { postId: string }) {
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder={
-                            !user 
-                            ? "Sign in to join the discussion..." 
-                            : !isVerified 
-                            ? "Verification required to comment..." 
-                            : "Add to the discussion..."
+                            !user
+                                ? "Sign in to join the discussion..."
+                                : !isVerified
+                                    ? "Verification required to comment..."
+                                    : "Add to the discussion..."
                         }
                         disabled={!canComment || isSubmitting}
                         className={`w-full border rounded-2xl p-4 text-slate-800 transition-all 
@@ -120,19 +120,19 @@ export default function CommentSection({ postId }: { postId: string }) {
                         `}
                         rows={3}
                     />
-                    
+
                     {/* Overlay for Unverified Users */}
                     {user && !isVerified && (
                         <div className="mt-2 flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
                             <FiLock className="shrink-0" />
                             <p className="text-sm font-bold">
-                                Your account is unverified. Please 
-                                <button 
+                                Your account is unverified. Please
+                                <button
                                     onClick={() => router.push('/profile')}
                                     className="mx-1 underline hover:text-amber-700"
                                 >
                                     verify your email
-                                </button> 
+                                </button>
                                 to participate.
                             </p>
                         </div>
@@ -160,7 +160,12 @@ export default function CommentSection({ postId }: { postId: string }) {
                 ) : (
                     <>
                         {comments.slice(0, visibleCount).map((comment) => (
-                            <CommentItem key={comment.$id} comment={comment} />
+                            <CommentItem
+                                key={comment.$id}
+                                comment={comment}
+                                currentUserId={user?.$id}
+                                currentUserIsVerified={isVerified}
+                            />
                         ))}
 
                         {visibleCount < comments.length && (
