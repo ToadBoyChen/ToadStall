@@ -1,4 +1,3 @@
-import AboutMe from "@/components/sections/AboutMe";
 import BestTools from "@/components/sections/BestTools";
 import Menu from "@/components/sections/Menu";
 import PopularDiscussions from "@/components/sections/PopularDiscussions";
@@ -16,7 +15,6 @@ export default function Home() {
                 <RecentArticles />
                 <RecentData />
                 <BestTools />
-                <AboutMe />
             </section>
         </main>
     );
