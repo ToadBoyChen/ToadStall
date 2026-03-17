@@ -60,6 +60,3 @@ export const WorldBankProvider: DataProvider = {
             }));
     }
 };
-
-// --- FUTURE UNICEF PROVIDER ---
-// export const UnicefProvider: DataProvider = { ... }

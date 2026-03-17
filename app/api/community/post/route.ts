@@ -1,15 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from 'next-sanity';
+import { writeClient } from '@/lib/sanity';
 
-const writeClient = createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    apiVersion: '2024-03-13',
-    useCdn: false,
-    token: process.env.SANITY_API_WRITE_TOKEN, 
-});
-
-// Sanity requires short, alphanumeric keys for array items
 const generateKey = () => Math.random().toString(36).substring(2, 12);
 
 export async function POST(request: Request) {
@@ -21,7 +12,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Generate a URL-friendly slug
         const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-5)}`;
 

@@ -4,11 +4,12 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { databases, storage, appwriteDatabaseId, appwritePfpsBucketId, account } from '@/lib/appwrite';
 import { Query, ID } from 'appwrite';
-import CommentItem from '@/components/comments/CommentItem';
 import VerificationBadge from '@/components/profile/VerificationBadge';
-import { FiAlertCircle, FiCheckCircle, FiUserPlus, FiUserCheck } from 'react-icons/fi';
+import { FiAlertCircle, FiCheckCircle, FiUserPlus, FiUserCheck, FiCamera } from 'react-icons/fi';
 import Link from 'next/link';
-import CreatePostButton from '../community/CreatePostButton';
+import CreatePostCTA from '@/components/profile/CreatePostCTA';
+import UserCommunityPosts from '@/components/profile/UserCommunityPosts';
+import RecentComments from './RecentComments';
 
 interface ProfileSectionProps {
     targetUserId: string;
@@ -16,34 +17,21 @@ interface ProfileSectionProps {
 
 export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
     const { user: currentUser, isLoading: authLoading, checkUser } = useAuth();
-    
-    // Determine context
     const isOwnProfile = currentUser?.$id === targetUserId;
     const currentUserIsVerified = currentUser?.profile?.isVerified === true;
-
-    // Data States
     const [profile, setProfile] = useState<any>(null);
     const [stats, setStats] = useState({ comments: 0, votes: 0, followers: 0, following: 0 });
     const [userComments, setUserComments] = useState<any[]>([]);
-    
-    // Network States (Actual user profiles)
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
-
     const [isLoading, setIsLoading] = useState(true);
-
-    // Editing States
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState('');
     const [editFile, setEditFile] = useState<File | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Verification States
     const [isSendingVerification, setIsSendingVerification] = useState(false);
     const [verificationStatus, setVerificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-    // Follow States
     const [isFollowing, setIsFollowing] = useState(false);
     const [followDocId, setFollowDocId] = useState<string | null>(null);
     const [isProcessingFollow, setIsProcessingFollow] = useState(false);
@@ -183,9 +171,9 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                 appwriteDatabaseId,
                 process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
                 profile.$id,
-                { 
-                    bio: editBio, 
-                    avatarURL: newAvatarUrl, 
+                {
+                    bio: editBio,
+                    avatarURL: newAvatarUrl,
                     username: currentUser?.name // <--- Maps Auth name to Database username
                 }
             );
@@ -215,21 +203,18 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
         }
     };
 
-    // Action: Toggle Follow (Public Profiles Only)
     const handleFollowToggle = async () => {
         if (!currentUserIsVerified || !currentUser) return;
         setIsProcessingFollow(true);
 
         try {
             if (isFollowing && followDocId) {
-                // UNFOLLOW
                 await databases.deleteDocument(appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_FOLLOWERS_COLLECTION_ID as string, followDocId);
                 setIsFollowing(false);
                 setFollowDocId(null);
                 setStats(prev => ({ ...prev, followers: prev.followers - 1 }));
                 setFollowersList(prev => prev.filter(f => f.userID !== currentUser.$id));
             } else {
-                // FOLLOW
                 const newFollowDoc = await databases.createDocument(
                     appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_FOLLOWERS_COLLECTION_ID as string, ID.unique(),
                     { followerId: currentUser.$id, followingId: targetUserId }
@@ -237,13 +222,12 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                 setIsFollowing(true);
                 setFollowDocId(newFollowDoc.$id);
                 setStats(prev => ({ ...prev, followers: prev.followers + 1 }));
-                
-                // Optimistically add current user to follower list UI
-                const mockCurrentUserProfile = { 
-                    userID: currentUser.$id, 
-                    username: currentUser.name, // <--- Using username here for the UI mock
+
+                const mockCurrentUserProfile = {
+                    userID: currentUser.$id,
+                    username: currentUser.name,
                     avatarURL: currentUser.profile?.avatarURL,
-                    isVerified: currentUserIsVerified 
+                    isVerified: currentUserIsVerified
                 };
                 setFollowersList(prev => [mockCurrentUserProfile, ...prev]);
             }
@@ -254,7 +238,6 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
         }
     };
 
-    // Helper to render mini user lists
     const renderMiniUserList = (users: any[], emptyMessage: string) => {
         if (users.length === 0) {
             return <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-400">{emptyMessage}</div>;
@@ -299,119 +282,131 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
     }
 
     const displayAvatar = isEditing && editFile ? URL.createObjectURL(editFile) : profile.avatarURL;
-    // Uses profile.username, falls back to Auth name if looking at your own profile, then Community Member
     const displayName = profile.username || (isOwnProfile && currentUser ? currentUser.name : "Community Member");
     const initial = displayName.charAt(0).toUpperCase();
 
+    const joinedDate = profile?.$createdAt
+        ? new Date(profile.$createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        : 'Recently';
+
     return (
         <div className="max-w-4xl mx-auto w-full px-4 py-12">
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden mb-8">
-                
-                {/* Header */}
-                <div className="bg-emerald-900 px-8 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                        <div className="relative group">
-                            <div className='flex flex-col items-center'>
-                                <div className="w-24 h-24 bg-emerald-500 text-white text-4xl font-black rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden shrink-0 mb-4">
-                                    {displayAvatar ? <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" /> : initial}
-                                </div>
-                                <VerificationBadge isVerified={profile.isVerified} />
+            <div className="rounded-3xl mb-8">
+
+                <div className="bg-emerald-900 p-12 flex flex-col items-center justify-end gap-8 relative rounded-t-3xl">
+                    <div className="flex flex-row items-center justify-between w-full">
+
+                        <div className="flex flex-col items-center group">
+                            <div className="relative w-24 h-24 bg-emerald-500 text-white text-4xl font-black rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden shrink-0 mb-4">
+                                {displayAvatar ? <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" /> : initial}
+                                {isOwnProfile && isEditing && (
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="absolute inset-0 bg-black/40 text-white flex items-center justify-center transition-all duration-300 ease-in-out hover:bg-black/60 focus:outline-none"
+                                        title="Change Profile Picture"
+                                    >
+                                        <FiCamera className="w-10 h-10 stroke-1" />
+                                    </button>
+                                )}
                             </div>
-                            
+
+                            <VerificationBadge isVerified={profile.isVerified} />
+
                             {isOwnProfile && (
-                                <>
-                                    <input type="file" ref={fileInputRef} onChange={(e) => setEditFile(e.target.files?.[0] || null)} className="hidden" accept="image/*" />
-                                    {isEditing && (
-                                        <button onClick={() => fileInputRef.current?.click()} className="absolute top-0 w-24 h-24 bg-black/50 text-white text-xs font-bold flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                            Change
-                                        </button>
-                                    )}
-                                </>
+                                <input type="file" ref={fileInputRef} onChange={(e) => setEditFile(e.target.files?.[0] || null)} className="hidden" accept="image/*" />
                             )}
                         </div>
-                        
+
                         <div className="text-white text-center md:text-left">
                             <h1 className="text-3xl font-black tracking-tight mb-1">
                                 {displayName}
                             </h1>
                             <p className="text-emerald-200/80 font-medium">
-                                {profile.isVerified ? 'Verified Member' : 'Community Member'}
+                                Joined {joinedDate}
                             </p>
                         </div>
                     </div>
 
-                    {/* Action Area */}
-                    {isOwnProfile ? (
-                        !isEditing ? (
-                            <button onClick={() => setIsEditing(true)} className="bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-full font-bold border border-white/20 transition-colors">
-                                Edit Profile
-                            </button>
-                        ) : (
-                            <div className="flex gap-3">
-                                <button onClick={() => { setIsEditing(false); setEditFile(null); }} className="text-white font-bold px-4">Cancel</button>
-                                <button onClick={handleSaveProfile} disabled={isSaving} className="bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-2 rounded-full font-bold transition-colors">
-                                    {isSaving ? 'Saving...' : 'Save'}
+                    <div className='absolute bottom-0 translate-y-1/2'>
+                        {isOwnProfile ? (
+                            !isEditing ? (
+                                <button onClick={() => setIsEditing(true)} className="bg-green-500 text-white px-7 py-3 rounded-full font-bold transition-colors">
+                                    Edit Profile
                                 </button>
+                            ) : (
+                                <div className="flex gap-8">
+                                    <button
+                                        onClick={() => { setIsEditing(false); setEditFile(null); }}
+                                        className="text-white bg-emerald-950 rounded-full font-bold px-7 py-3">
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        onClick={handleSaveProfile}
+                                        disabled={isSaving}
+                                        className="bg-emerald-500 hover:bg-emerald-400 text-white px-7 py-3 rounded-full font-bold transition-colors">
+                                        {isSaving ? 'Saving...' : 'Save'}
+                                    </button>
+                                </div>
+                            )
+                        ) : (
+                            currentUser && (
+                                <button
+                                    onClick={handleFollowToggle}
+                                    disabled={!currentUserIsVerified || isProcessingFollow}
+                                    className={`px-6 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors
+                ${!currentUserIsVerified
+                                            ? 'bg-white/10 text-white/50 cursor-not-allowed border border-white/10'
+                                            : isFollowing
+                                                ? 'bg-white text-emerald-900 hover:bg-slate-100'
+                                                : 'bg-emerald-500 hover:bg-emerald-400 text-white'
+                                        }`}
+                                    title={!currentUserIsVerified ? "Verify your email to follow users" : ""}
+                                >
+                                    {isFollowing ? (
+                                        <>
+                                            <FiUserCheck className="w-4 h-4" />
+                                            <span>Following</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FiUserPlus className="w-4 h-4" />
+                                            <span>Follow</span>
+                                        </>
+                                    )}
+                                </button>
+                            )
+                        )}
+                    </div>
+                </div>
+
+                <div className=''>
+                    {isOwnProfile && !profile.isVerified && (
+                        <div className="bg-amber-50/80 border-b border-amber-100 px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 text-amber-800">
+                                <FiAlertCircle className="w-5 h-5 shrink-0" />
+                                <p className="text-sm font-medium">
+                                    Your account is unverified. Please verify your email to unlock all features.
+                                </p>
                             </div>
-                        )
-                    ) : (
-                        currentUser && (
-                            <button 
-                                onClick={handleFollowToggle}
-                                disabled={!currentUserIsVerified || isProcessingFollow}
-                                className={`px-6 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors
-                                    ${!currentUserIsVerified 
-                                        ? 'bg-white/10 text-white/50 cursor-not-allowed border border-white/10'
-                                        : isFollowing
-                                            ? 'bg-white text-emerald-900 hover:bg-slate-100'
-                                            : 'bg-emerald-500 hover:bg-emerald-400 text-white' 
-                                    }`}
-                                title={!currentUserIsVerified ? "Verify your email to follow users" : ""}
+                            <button
+                                onClick={handleSendVerification}
+                                disabled={isSendingVerification || verificationStatus === 'success'}
+                                className={`shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors flex items-center gap-2
+                                ${verificationStatus === 'success' ? 'bg-emerald-100 text-emerald-700 cursor-default' : 'bg-amber-200 hover:bg-amber-300 text-amber-900'}`}
                             >
-                                {isFollowing ? (
-                                    <>
-                                        <FiUserCheck className="w-4 h-4" />
-                                        <span>Following</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <FiUserPlus className="w-4 h-4" />
-                                        <span>Follow</span>
-                                    </>
-                                )}
+                                {isSendingVerification ? 'Sending...' : verificationStatus === 'success' ? <><FiCheckCircle className="w-4 h-4" /> Email Sent!</> : 'Send Verification'}
                             </button>
-                        )
+                        </div>
+                    )}
+                    {isOwnProfile && verificationStatus === 'error' && (
+                        <div className="bg-red-50 text-red-600 text-xs font-bold text-center py-2">
+                            Failed to send verification email. Please try again later.
+                        </div>
                     )}
                 </div>
 
-                {/* Unverified Banner (Own Profile Only) */}
-                {isOwnProfile && !profile.isVerified && (
-                    <div className="bg-amber-50/80 border-b border-amber-100 px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 text-amber-800">
-                            <FiAlertCircle className="w-5 h-5 shrink-0" />
-                            <p className="text-sm font-medium">
-                                Your account is unverified. Please verify your email to unlock all features.
-                            </p>
-                        </div>
-                        <button 
-                            onClick={handleSendVerification}
-                            disabled={isSendingVerification || verificationStatus === 'success'}
-                            className={`shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors flex items-center gap-2
-                                ${verificationStatus === 'success' ? 'bg-emerald-100 text-emerald-700 cursor-default' : 'bg-amber-200 hover:bg-amber-300 text-amber-900'}`}
-                        >
-                            {isSendingVerification ? 'Sending...' : verificationStatus === 'success' ? <><FiCheckCircle className="w-4 h-4" /> Email Sent!</> : 'Send Verification'}
-                        </button>
-                    </div>
-                )}
-                {isOwnProfile && verificationStatus === 'error' && (
-                    <div className="bg-red-50 text-red-600 text-xs font-bold text-center py-2">
-                        Failed to send verification email. Please try again later.
-                    </div>
-                )}
-
-                {/* Content Area - Split into About/Stats and Network */}
-                <div className="p-8">
-                    {/* Top Row: About & Stats */}
+                <div className="py-24 px-4 sm:px-8 bg-white rounded-b-3xl">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                         <div className="md:col-span-2">
                             <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">About</h2>
@@ -423,7 +418,7 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                                 )}
                             </div>
                         </div>
-                        
+
                         <div>
                             <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">Activity</h2>
                             <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
@@ -443,7 +438,7 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                     <div className="pt-8 border-t border-slate-100">
                         <h2 className="text-xl font-black text-slate-900 mb-6">Network</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            
+
                             {/* Followers Column */}
                             <div>
                                 <div className="flex items-center gap-2 mb-4">
@@ -468,30 +463,23 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                 </div>
             </div>
 
-            <CreatePostButton />
+            <div className='h-32' />
 
-            {/* Comments List */}
-            <div className="space-y-6 mt-16">
-                <h2 className="text-3xl font-black text-slate-900">
-                    {isOwnProfile ? "Your Recent Comments" : "Recent Comments"}
-                </h2>
-                {userComments.length === 0 ? (
-                    <div className="bg-white p-12 rounded-3xl text-center border border-slate-100 shadow-sm">
-                        <p className="text-slate-400 font-medium">No discussions joined yet.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {userComments.map(comment => (
-                            <CommentItem 
-                                key={comment.$id} 
-                                comment={comment} 
-                                currentUserId={currentUser?.$id}
-                                currentUserIsVerified={currentUserIsVerified}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
+            <UserCommunityPosts
+                targetUserId={targetUserId}
+                isOwnProfile={isOwnProfile}
+            />
+
+            {isOwnProfile && <CreatePostCTA />}
+
+            <div className='h-32' />
+
+            <RecentComments
+                comments={userComments}
+                isOwnProfile={isOwnProfile}
+                currentUserId={currentUser?.$id}
+                currentUserIsVerified={currentUserIsVerified}
+            />
         </div>
     );
 }
