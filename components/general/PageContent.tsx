@@ -27,8 +27,8 @@ export default function PageContent({
 }: PageContentProps) {
     return (
         <main className="relative z-10 w-full min-h-screen pt-24 md:pt-32 pb-32 md:pb-48">
-            <div className="max-w-4xl mx-auto px-0 sm:px-6 md:px-8">
-                <article className="bg-white sm:rounded-3xl pt-8 pb-12 px-5 sm:p-10 md:p-16 sm:shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
+            <div className="max-w-7xl mx-auto px-0 sm:px-6 md:px-8">
+                <article className="bg-white sm:rounded-3xl pt-8 pb-12 px-5 sm:p-4 md:p-16 sm:shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
                     
                     {mainImage && mainImage.asset && (
                         <div className="relative w-full aspect-16/10 md:h-96 mb-8 md:mb-12 overflow-hidden rounded-xl md:rounded-2xl bg-slate-100">

@@ -1,9 +1,10 @@
-import ChartRenderer from './ChartRenderer';
+import StaticChart from './StaticChart';
 
 export default async function DynamicChartWrapper({ blockData, isCompact = false }: { blockData: any, isCompact?: boolean }) {
     let finalData: any[] = [];
+    let title = blockData.title || "";
+    let subtitle = blockData.subtitle || "";
 
-    // 1. Handle Manual Data Entry
     if (blockData.dataSource === 'manual' && blockData.chartData) {
         const formattedDataMap: Record<string, any> = {};
 
@@ -39,6 +40,9 @@ export default async function DynamicChartWrapper({ blockData, isCompact = false
                         .filter((item: any) => item.value !== null)
                         .sort((a: any, b: any) => parseInt(a.date) - parseInt(b.date))
                         .map((item: any) => ({ label: item.date, value: item.value }));
+                    
+                    if (!title && wbResponse[1][0]?.indicator?.value) title = wbResponse[1][0].indicator.value;
+                    if (!subtitle && wbResponse[1][0]?.country?.value) subtitle = wbResponse[1][0].country.value;
                 }
             }
         } catch (error) {
@@ -47,22 +51,14 @@ export default async function DynamicChartWrapper({ blockData, isCompact = false
     }
 
     return (
-        <div className={`flex flex-col w-full ${isCompact ? "mt-2" : "my-12"}`}>
-            
-            <div className={`${isCompact ? "h-48" : "h-72 sm:h-96"} w-full relative`}>
-                <ChartRenderer 
-                    type={blockData.chartType} 
-                    data={finalData} 
-                    isCompact={isCompact}
-                    smartYAxis={blockData.smartYAxis} 
-                />
-            </div>
-
-            {!isCompact && blockData.caption && (
-                <p className="mt-4 text-center text-xs text-slate-400 font-medium italic">
-                    {blockData.caption}
-                </p>
-            )}
-        </div>
+        <StaticChart
+            title={title}
+            subtitle={subtitle}
+            data={finalData}
+            chartType={blockData.chartType}
+            smartYAxis={blockData.smartYAxis}
+            isCompact={isCompact}
+            caption={blockData.caption}
+        />
     );
 }

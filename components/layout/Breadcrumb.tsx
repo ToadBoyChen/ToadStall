@@ -34,12 +34,12 @@ export default function Breadcrumbs() {
     });
 
     return (
-        <div aria-label="Breadcrumb" className="flex items-center overflow-hidden h-8 z-[9999]">
-            <ol className="flex items-center text-xs sm:text-sm font-medium">
+        <div aria-label="Breadcrumb" className="flex items-center overflow-hidden h-8 z-9999 text-xs font-bold tracking-tighter text-slate-300">
+            <ol className="flex items-center">
                 <li className="pr-1">
                     <Link
                         href="/"
-                        className="text-slate-400 hover:text-emerald-500 transition-all duration-300 hover:scale-110 active:scale-95 flex items-center"
+                        className="hover:text-emerald-500 transition-all duration-300 flex items-center"
                     >
                         Home
                         <span className="sr-only">Home</span>
@@ -60,16 +60,16 @@ export default function Breadcrumbs() {
                         >
                             <div className="overflow-hidden min-w-0">
                                 <div className="flex items-center gap-1 pr-1 w-max">
-                                    <HiChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                                    <HiChevronRight className="w-3.5 h-3.5 shrink-0" />
 
                                     {item.isLast ? (
-                                        <span className="text-slate-900 font-bold truncate max-w-[100px] sm:max-w-[200px] block">
+                                        <span className="font-bold truncate max-w-25 sm:max-w-50 block hover:text-emerald-500 cursor-pointer transition-colors duration-200 text-black">
                                             {formattedSegment}
                                         </span>
                                     ) : (
                                         <Link
                                             href={item.href}
-                                            className="text-slate-400 hover:text-slate-600 transition-colors duration-200 relative group block"
+                                            className="transition-colors duration-200 relative group block hover:text-emerald-500"
                                         >
                                             {formattedSegment}
                                             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300 group-hover:w-full" />
