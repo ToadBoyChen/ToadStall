@@ -22,22 +22,15 @@ export default async function RecentData() {
 
     return (
         <section className="w-full">
-            <div className="flex flex-col md:flex-row justify-between items-baseline mb-4 pb-4">
-                <h2 className="text-6xl font-black text-white tracking-tight mb-2">
+            <div className="mb-6 sm:mb-10 md:mb-12">
+                <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
                     Key Data Points
                 </h2>
-                <Link
-                    href="/data"
-                    className="text-white mix-blend-difference hover:text-emerald-300 text-sm font-bold tracking-widest uppercase mt-4 md:mt-0 transition-colors flex items-center gap-2 group"
-                >
-                    View All
-                    <FiArrowRight className="text-lg group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((post: any) => (
-                    <ContentCard 
+                    <ContentCard
                         key={post._id}
                         id={post._id}
                         title={post.title}

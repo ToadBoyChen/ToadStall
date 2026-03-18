@@ -34,33 +34,32 @@ const MENU_ITEMS = [
 
 export default function Menu() {
     return (
-        <section className="">
-
-            <div className="mb-12">
-                <h2 className="text-6xl font-black text-white tracking-tight mb-2">
+        <section className="w-full">
+            <div className="mb-6 sm:mb-10 md:mb-12">
+                <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
                     Explore Platform
                 </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:gap-8">
                 {MENU_ITEMS.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
-                        className="group relative flex flex-col justify-between p-8 bg-white/80 rounded-3xl transition-all duration-300 hover:bg-white overflow-hidden"
+                        className="group relative flex flex-col justify-between p-8 bg-white/80 rounded-3xl transition-all duration-300 hover:bg-white"
                     >
-                        <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-2xl text-emerald-600 mb-6 group-hover:scale-110 group-hover:bg-emerald-100 transition-all duration-300">
+                        <div className="absolute -top-3 -right-3 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 p-1 rounded-full bg-emerald-50 group-hover:bg-emerald-200 flex items-center justify-center text-2xl text-emerald-600">
                             {item.icon}
                         </div>
 
-                        <h3 className="text-2xl font-bold mb-3 group-hover:text-emerald-400 transition-colors duration-300 tracking-tight">
+                        <h3 className="text-lg mb-1 sm:text-xl sm:mb-2 md:text-2xl md:mb-3 font-black group-hover:text-emerald-400 transition-colors duration-300 tracking-tight">
                             {item.title}
                         </h3>
-                        <p className="text-slate-700 leading-relaxed font-medium">
+                        <p className="text-slate-700 leading-tight text-sm sm:text-md md:text-lg">
                             {item.description}
                         </p>
 
-                        <div className="mt-8 flex items-center text-emerald-500 font-bold text-sm tracking-widest uppercase translate-x-0 group-hover:translate-x-4 transition-all duration-300">
+                        <div className="mt-8 flex items-center text-emerald-500 font-extrabold text-md sm:text-lg md:text-xl md:mt-16 tracking-widest uppercase translate-x-0 group-hover:translate-x-4 transition-all duration-300">
                             Explore <FiArrowRight className="ml-2 text-lg" />
                         </div>
                     </Link>
