@@ -9,10 +9,17 @@ interface CommentItemProps {
     comment: any;
     currentUserId?: string;
     currentUserIsVerified?: boolean;
+    initialIsFollowing?: boolean; 
 }
 
-export default function CommentItem({ comment, currentUserId, currentUserIsVerified }: CommentItemProps) {
-    const [isFollowing, setIsFollowing] = useState(false);
+export default function CommentItem({ 
+    comment, 
+    currentUserId, 
+    currentUserIsVerified,
+    initialIsFollowing = false 
+}: CommentItemProps) {
+    
+    const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isProcessing, setIsProcessing] = useState(false);
 
     const isOwnComment = currentUserId === comment.userId;
@@ -52,15 +59,12 @@ export default function CommentItem({ comment, currentUserId, currentUserIsVerif
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                     
                     <div className="flex items-center gap-2">
-                        {/* Clickable Name */}
                         <Link 
                             href={`/profile/${comment.userId}`}
                             className="font-bold text-slate-900 hover:text-emerald-600 transition-colors truncate"
                         >
                             {comment.authorName}
                         </Link>
-
-                        {/* Verified Badge */}
                         {comment.authorIsVerified && (
                             <div className="scale-75 origin-left">
                                 <VerificationBadge isVerified={true} />
@@ -68,7 +72,6 @@ export default function CommentItem({ comment, currentUserId, currentUserIsVerif
                         )}
                     </div>
 
-                    {/* Follow Button (Hidden if it's your own comment or you aren't logged in) */}
                     {currentUserId && !isOwnComment && (
                         <button
                             onClick={handleFollow}

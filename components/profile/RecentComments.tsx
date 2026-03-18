@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import CommentItem from '@/components/comments/CommentItem';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
-
 import { sanityClient } from '@/lib/sanity';
 
 interface RecentCommentsProps {
@@ -12,13 +11,15 @@ interface RecentCommentsProps {
     isOwnProfile: boolean;
     currentUserId?: string;
     currentUserIsVerified: boolean;
+    currentUserFollows?: string[]; 
 }
 
 export default function RecentComments({
     comments,
     isOwnProfile,
     currentUserId,
-    currentUserIsVerified
+    currentUserIsVerified,
+    currentUserFollows = [] 
 }: RecentCommentsProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [enrichedComments, setEnrichedComments] = useState<any[]>([]);
@@ -40,8 +41,6 @@ export default function RecentComments({
 
             try {
                 const allIdsToSearch = [...postIds, ...postIds.map(id => `drafts.${id}`)];
-
-                // 1. Added '_type' to the GROQ query so we know what kind of post this is
                 const sanityQuery = `*[_id in $allIds] { 
                     _id, 
                     _type,
@@ -50,18 +49,16 @@ export default function RecentComments({
 
                 const sanityPosts = await sanityClient.fetch(sanityQuery, { allIds: allIdsToSearch });
 
-                // 2. Helper function to map Sanity _type to your Next.js routes
                 const getBasePath = (type: string) => {
                     switch (type) {
                         case 'community': return '/community';
-                        case 'article': return '/articles'; // adjust if your route is /article instead
+                        case 'article': return '/articles';
                         case 'data': return '/data';
-                        // Add any other types you have here!
+                        case 'tools-technical': return '/tools-technical';
                         default: return `/${type}`; 
                     }
                 };
 
-                // 3. Create a map that stores the FULL URL path, not just the slug
                 const urlMap: Record<string, string> = {};
                 sanityPosts.forEach((post: any) => {
                     const cleanId = post._id.replace('drafts.', '');
@@ -69,10 +66,9 @@ export default function RecentComments({
                     urlMap[cleanId] = `${basePath}/${post.slug}`;
                 });
 
-                // 4. Attach the full URL to the comment
                 const updatedComments = comments.map(c => ({
                     ...c,
-                    postUrl: urlMap[c.sanityPostId] || `/community/${c.sanityPostId}` // Fallback just in case
+                    postUrl: urlMap[c.sanityPostId] || `/community/${c.sanityPostId}`
                 }));
 
                 setEnrichedComments(updatedComments);
@@ -108,7 +104,6 @@ export default function RecentComments({
                                 <div
                                     key={comment.$id}
                                     onClick={() => {
-                                        // 5. Route directly to the fully constructed URL
                                         console.log("Navigating to:", comment.postUrl);
                                         router.push(comment.postUrl);
                                     }}
@@ -119,6 +114,7 @@ export default function RecentComments({
                                             comment={comment}
                                             currentUserId={currentUserId}
                                             currentUserIsVerified={currentUserIsVerified}
+                                            initialIsFollowing={currentUserFollows.includes(comment.userId)}
                                         />
                                     </div>
                                 </div>

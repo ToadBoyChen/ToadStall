@@ -9,7 +9,7 @@ interface VerificationBadgeProps {
 export default function VerificationBadge({ isVerified }: VerificationBadgeProps) {
     if (isVerified) {
         return (
-            <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md">
+            <div className="flex items-center gap-1.5 bg-emerald-100/90 text-emerald-500 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
                 <FiCheckCircle className="w-4 h-4" />
                 <span>Verified</span>
             </div>
@@ -17,7 +17,7 @@ export default function VerificationBadge({ isVerified }: VerificationBadgeProps
     }
 
     return (
-        <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-1.5 bg-amber-100/90 text-amber-500 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
             <FiAlertCircle className="w-4 h-4" />
             <span>Unverified</span>
         </div>
