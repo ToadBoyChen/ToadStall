@@ -51,7 +51,7 @@ export default function AuthPage() {
 
             await checkUser();
 
-            router.push('/community');
+            router.push('/profile');
 
         } catch (err) {
             if (err instanceof AppwriteException) {
