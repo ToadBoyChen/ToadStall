@@ -22,11 +22,13 @@ export default function EngagementBar({ postId, variant = 'full', readOnly = fal
     }
 
     return (
-        <div className="pt-4">
-            <div className="flex items-center justify-between mb-8">
+        <div className="px-8 md:px-0">
+            <div className="flex flex-wrap w-full justify-between items-center gap-4 mb-10 pb-8">
                 <YesNo postId={postId} readOnly={readOnly} />
+                <CommentCountBadge postId={postId} />
             </div>
-            <CommentSection postId={postId} />
+            
+            <CommentSection postId={postId} readOnly={readOnly} />
         </div>
     );
 }

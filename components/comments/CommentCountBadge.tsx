@@ -45,8 +45,8 @@ export default function CommentCountBadge({ postId, subtle = false }: CommentCou
     }
 
     return (
-        <div className="flex items-center gap-2 text-slate-700 font-bold px-4 py-2 bg-slate-100 rounded-full pointer-events-none">
-            <FiMessageSquare className="w-5 h-5 text-slate-500" />
+        <div className="flex items-center gap-2 text-slate-800 font-bold px-4 py-2 bg-white/80 rounded-full pointer-events-none">
+            <FiMessageSquare className="w-5 h-5 text-slate-800" />
             <span>{count}</span>
         </div>
     );

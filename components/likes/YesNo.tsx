@@ -111,7 +111,7 @@ export default function YesNo({ postId, readOnly = false }: { postId: string, re
 
     if (readOnly) {
         return (
-            <div className="flex items-center gap-4 text-slate-400 pointer-events-none">
+            <div className="flex items-center gap-4 text-slate-800 pointer-events-none bg-white/80 px-4 py-2 rounded-full">
                 <div className="flex items-center gap-1.5">
                     <FiThumbsUp className="w-4 h-4" />
                     <span className="font-semibold text-sm">{upvotes}</span>

@@ -9,7 +9,8 @@ const QUERY = `*[ _type == "community" && slug.current == $slug ][0] {
     publishedAt,
     body,
     authorName,
-    mainImage
+    mainImage,
+    status
 }`;
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
@@ -26,6 +27,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             mainImage={post.mainImage}
             body={post.body}
             portableTextComponents={sharedPortableTextComponents}
+            status={post.status}
         />
     );
 }

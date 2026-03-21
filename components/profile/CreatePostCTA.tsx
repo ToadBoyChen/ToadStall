@@ -11,14 +11,13 @@ export default function CreatePostCTA() {
                     <FiMessageSquare className="w-6 h-6" />
                 </div>
                 <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Start a Discussion</h3>
-                    <p className="text-sm font-medium text-slate-500 mt-1">
+                    <h3 className="text-left text-xl font-black text-slate-900 tracking-tight">Start a Discussion</h3>
+                    <p className="text-left text-sm font-medium text-slate-500 mt-1">
                         Got a question, idea, or finding? Share it with the community.
                     </p>
                 </div>
             </div>
             <div className="shrink-0 w-full sm:w-auto flex justify-center">
-                {/* Your existing button goes here */}
                 <CreatePostButton />
             </div>
         </div>
