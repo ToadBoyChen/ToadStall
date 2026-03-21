@@ -11,10 +11,6 @@ import CreatePostCTA from '@/components/profile/CreatePostCTA';
 import UserCommunityPosts from '@/components/profile/UserCommunityPosts';
 import RecentComments from './RecentComments';
 
-// ==========================================
-// SUB-COMPONENTS (Can be moved to separate files later)
-// ==========================================
-
 const ProfileHeader = ({ profile, isOwnProfile, currentUser, displayAvatar, initial, isEditing, setIsEditing, editFile, setEditFile, handleSaveProfile, isSaving, handleFollowToggle, isProcessingFollow, isFollowing, currentUserIsVerified, fileInputRef, joinedDate }: any) => (
     <div className="bg-emerald-900 p-12 flex flex-col items-center justify-end gap-8 relative rounded-t-3xl">
         <div className="flex flex-row items-center justify-between w-full">
@@ -48,15 +44,15 @@ const ProfileHeader = ({ profile, isOwnProfile, currentUser, displayAvatar, init
         <div className='absolute bottom-0 translate-y-1/2'>
             {isOwnProfile ? (
                 !isEditing ? (
-                    <button onClick={() => setIsEditing(true)} className="bg-green-500 text-white px-7 py-3 rounded-full font-bold transition-colors">
+                    <button onClick={() => setIsEditing(true)} className="bg-green-500 text-white px-7 py-3 rounded-full font-bold transition-colors cursor-pointer">
                         Edit Profile
                     </button>
                 ) : (
                     <div className="flex gap-8">
-                        <button onClick={() => { setIsEditing(false); setEditFile(null); }} className="text-white bg-emerald-950 rounded-full font-bold px-7 py-3">
+                        <button onClick={() => { setIsEditing(false); setEditFile(null); }} className="text-white bg-emerald-950 rounded-full font-bold px-7 py-3 cursor-pointer">
                             Cancel
                         </button>
-                        <button onClick={handleSaveProfile} disabled={isSaving} className="bg-emerald-500 hover:bg-emerald-400 text-white px-7 py-3 rounded-full font-bold transition-colors">
+                        <button onClick={handleSaveProfile} disabled={isSaving} className="bg-emerald-500 hover:bg-emerald-400 text-white px-7 py-3 rounded-full font-bold transition-colors cursor-pointer">
                             {isSaving ? 'Saving...' : 'Save'}
                         </button>
                     </div>

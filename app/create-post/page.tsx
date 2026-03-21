@@ -3,8 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { FiArrowLeft, FiFeather } from 'react-icons/fi';
-import Link from 'next/link';
+import { FiFeather } from 'react-icons/fi';
+import dynamic from 'next/dynamic';
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
+
+const MDEditor = dynamic(
+  () => import('@uiw/react-md-editor').then((mod) => mod.default),
+  { ssr: false, loading: () => <p className="text-slate-400 p-4">Loading editor...</p> }
+);
 
 export default function CreatePostPage() {
     const { user, isLoading } = useAuth();
@@ -12,6 +19,7 @@ export default function CreatePostPage() {
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [isOpenDiscussion, setIsOpenDiscussion] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -49,7 +57,8 @@ export default function CreatePostPage() {
                     title: title.trim(),
                     content: content.trim(),
                     authorId: user.$id,
-                    authorName: user.profile?.username || user.name
+                    authorName: user.profile?.username || user.name,
+                    status: isOpenDiscussion ? 'open' : undefined
                 })
             });
 
@@ -68,14 +77,8 @@ export default function CreatePostPage() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50/50 pt-32 pb-24 px-4">
-            <div className="max-w-3xl mx-auto">
-                
-                <Link href="/community" className="inline-flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-bold mb-8 transition-colors">
-                    <FiArrowLeft className="w-4 h-4" />
-                    Back to Community
-                </Link>
-
+        <main className="min-h-screen pt-32 pb-24 px-4">
+            <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 sm:p-12">
                     <div className="flex items-center gap-4 mb-8 border-b border-slate-100 pb-8">
                         <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
@@ -93,7 +96,7 @@ export default function CreatePostPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-8">
                         <div>
                             <input
                                 type="text"
@@ -107,14 +110,35 @@ export default function CreatePostPage() {
                             />
                         </div>
 
-                        <div>
-                            <textarea
-                                placeholder="What's on your mind? (Markdown supported)"
+                        {/* Rich Markdown Editor */}
+                        <div data-color-mode="light">
+                            <MDEditor
                                 value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                disabled={isSubmitting}
-                                className="w-full min-h-75 text-lg text-slate-700 placeholder:text-slate-400 outline-none resize-y bg-transparent leading-relaxed"
+                                onChange={(val) => setContent(val || '')}
+                                preview="live"
+                                height={400}
+                                textareaProps={{
+                                    placeholder: 'What is on your mind? Format with Markdown...'
+                                }}
                             />
+                        </div>
+
+                        {/* NEW: Discussion Toggle */}
+                        <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    className="sr-only peer"
+                                    checked={isOpenDiscussion}
+                                    onChange={(e) => setIsOpenDiscussion(e.target.checked)}
+                                    disabled={isSubmitting}
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                            <div>
+                                <p className="text-sm font-bold text-slate-700">Open for community discussion</p>
+                                <p className="text-xs text-slate-500">Allow other members to reply and interact with this post.</p>
+                            </div>
                         </div>
 
                         <div className="pt-6 flex items-center justify-between border-t border-slate-100">

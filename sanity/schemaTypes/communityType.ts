@@ -38,9 +38,7 @@ export const communityType = defineType({
           {title: 'Open', value: 'open'},
           {title: 'Closed', value: 'closed'},
         ],
-        layout: 'radio',
       },
-      initialValue: 'open',
     }),
     defineField({
       name: 'publishedAt',
@@ -50,7 +48,7 @@ export const communityType = defineType({
     defineField({
       name: 'body',
       title: 'Initial Post / Context',
-      type: 'blockContent',
+      type: 'text',
     }),
   ],
 })

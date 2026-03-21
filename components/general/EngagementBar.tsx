@@ -14,7 +14,7 @@ export default function EngagementBar({ postId, variant = 'full', readOnly = fal
     
     if (variant === 'minimal') {
         return (
-            <div className="relative z-10 flex items-center justify-between border-t border-slate-200/60 pt-4 mt-auto">
+            <div className="relative z-10 flex items-center justify-between pt-8">
                 <YesNo postId={postId} readOnly={readOnly} />
                 <CommentCountBadge postId={postId} subtle={true} />
             </div>

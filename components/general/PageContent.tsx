@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { urlFor } from '@/sanity/lib/image';
 import EngagementBar from '@/components/general/EngagementBar';
 
@@ -15,6 +16,20 @@ interface PageContentProps {
     headerExtras?: React.ReactNode;
 }
 
+function getMarkdownString(bodyData: any): string | null {
+    if (typeof bodyData === 'string') return bodyData;
+    
+    if (Array.isArray(bodyData)) {
+        const extractedText = bodyData
+            .map(block => block.children?.map((child: any) => child.text).join('') || '')
+            .join('\n\n');
+            
+        if (extractedText.trim().length > 0) return extractedText;
+    }
+    
+    return null;
+}
+
 export default function PageContent({
     id,
     title,
@@ -25,6 +40,17 @@ export default function PageContent({
     portableTextComponents,
     headerExtras
 }: PageContentProps) {
+    
+    const markdownString = getMarkdownString(body);
+
+    const looksLikeMarkdown = markdownString && (
+        markdownString.includes('#') || 
+        markdownString.includes('```') || 
+        markdownString.includes('**') ||
+        markdownString.includes('> ') ||
+        markdownString.includes('- ')
+    );
+
     return (
         <main className="relative z-10 w-full min-h-screen pt-24 md:pt-32 pb-32 md:pb-48">
             <div className="max-w-7xl mx-auto px-0 sm:px-6 md:px-8">
@@ -46,40 +72,24 @@ export default function PageContent({
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.15] mb-4 sm:mb-6">
                             {title}
                         </h1>
-                        
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm md:text-base text-slate-500 font-medium">
-                            <time dateTime={publishedAt}>
-                                {new Date(publishedAt || Date.now()).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                })}
-                            </time>
-                            
-                            {authorName && (
-                                <>
-                                    <span className="text-slate-300">•</span>
-                                    <span>By <span className="text-slate-700">{authorName}</span></span>
-                                </>
-                            )}
-                            
-                            {headerExtras && (
-                                <>
-                                    <span className="text-slate-300">•</span>
-                                    <div>{headerExtras}</div>
-                                </>
-                            )}
-                        </div>
                     </header>
 
                     <div className="prose prose-slate sm:prose-lg max-w-none 
                                     prose-headings:font-bold prose-headings:tracking-tight 
                                     prose-a:text-emerald-600 prose-a:decoration-emerald-500/30 hover:prose-a:decoration-emerald-500 prose-a:underline-offset-4 prose-a:transition-all
                                     prose-img:rounded-xl">
-                        <PortableText
-                            value={body}
-                            components={portableTextComponents}
-                        />
+                  
+                        {looksLikeMarkdown ? (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {markdownString}
+                            </ReactMarkdown>
+                        ) : (
+                            <PortableText
+                                value={body}
+                                components={portableTextComponents}
+                            />
+                        )}
+                        
                     </div>
                 </article>
                 

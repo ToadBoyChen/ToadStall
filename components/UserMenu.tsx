@@ -49,7 +49,7 @@ export default function UserMenu() {
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-8 pr-0 sm:pr-2 md:pr-4 transition-all p-1"
+                className="flex items-center gap-8 pr-0 sm:pr-2 md:pr-4 transition-all p-1 cursor-pointer"
             >
                 <p className="opacity-0 sm:opacity-100 text-sm md:text-lg font-bold text-slate-700 max-w-25 truncate">
                     {user.name}

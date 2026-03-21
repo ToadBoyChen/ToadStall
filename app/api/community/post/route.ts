@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { writeClient } from '@/lib/sanity';
 
-const generateKey = () => Math.random().toString(36).substring(2, 12);
-
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { title, content, authorId, authorName } = body;
+        const reqBody = await request.json();
+        
+        const { title, content, authorId, authorName, status } = reqBody;
 
         if (!title || !content || !authorId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
         const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-5)}`;
 
-        const sanityDoc = {
+        const sanityDoc: any = {
             _type: 'community',
             title: title,
             slug: {
@@ -24,25 +23,14 @@ export async function POST(request: Request) {
             },
             authorName: authorName, 
             authorAppwriteId: authorId,
-            status: 'open',
             publishedAt: new Date().toISOString(),
-            body: [
-                {
-                    _type: 'block',
-                    _key: generateKey(),
-                    style: 'normal',
-                    markDefs: [],
-                    children: [
-                        {
-                            _type: 'span',
-                            _key: generateKey(),
-                            text: content,
-                            marks: [],
-                        }
-                    ]
-                }
-            ]
+            
+            body: content, 
         };
+
+        if (status) {
+            sanityDoc.status = status;
+        }
 
         const result = await writeClient.create(sanityDoc);
         return NextResponse.json({ success: true, post: result }, { status: 201 });

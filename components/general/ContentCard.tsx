@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { FiUser, FiLock, FiUnlock } from 'react-icons/fi';
 import ExpandableText from '@/components/general/ExpandableText';
 import EngagementBar from '@/components/general/EngagementBar';
+import { getCleanExcerpt } from '@/lib/utils';
 
 interface ContentCardProps {
     id?: string;
     title: string;
     href: string;
     publishedAt?: string;
-    text?: string;
+    text?: any;
     authorName?: string;
     status?: string;
     badgeLabel?: string;
@@ -31,7 +32,11 @@ export default function ContentCard({
     visualElement
 }: ContentCardProps) {
     
-    const isClosed = status?.toLowerCase() === 'closed';
+    const normalizedStatus = status?.toLowerCase();
+    const showStatusBadge = normalizedStatus === 'open' || normalizedStatus === 'closed';
+    const isClosed = normalizedStatus === 'closed';
+    
+    const cleanTextExcerpt = getCleanExcerpt(text);
 
     return (
         <div className="group relative flex flex-col justify-between p-6 bg-white/80 rounded-2xl hover:bg-white hover:border-emerald-500/30 transition-all duration-300 border border-transparent overflow-hidden h-full">
@@ -58,7 +63,7 @@ export default function ContentCard({
                 )}
             </div>
 
-            {(authorName || status) && (
+            {(authorName || showStatusBadge) && (
                 <div className="flex items-center gap-4 mb-4 mt-2 pointer-events-none">
                     {authorName && (
                         <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-500">
@@ -67,7 +72,7 @@ export default function ContentCard({
                         </div>
                     )}
 
-                    {status && (
+                    {showStatusBadge && (
                         <div className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
                             isClosed ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-600'
                         }`}>
@@ -84,7 +89,7 @@ export default function ContentCard({
                 </div>
             )}
 
-            {text && <ExpandableText text={text} />}
+            {cleanTextExcerpt && <ExpandableText text={cleanTextExcerpt} />}
             
             {id && (
                 <EngagementBar 
