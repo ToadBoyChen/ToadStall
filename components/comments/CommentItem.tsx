@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FiUserPlus, FiCheck } from 'react-icons/fi';
 import VerificationBadge from '../profile/VerificationBadge';
+import ProfilePfp from '../profile/ProfilePfp'; // <-- Make sure this path matches where you saved the component
 
 interface CommentItemProps {
     comment: any;
@@ -32,6 +33,7 @@ export default function CommentItem({
 
         setIsProcessing(true);
         try {
+            // Your follow logic here
             setIsFollowing(!isFollowing);
         } catch (error) {
             console.error("Failed to follow user:", error);
@@ -40,19 +42,16 @@ export default function CommentItem({
         }
     };
 
-    const initial = comment.authorName ? comment.authorName.charAt(0).toUpperCase() : '?';
-
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex gap-4 transition-all hover:shadow-md">
             
             <Link href={`/profile/${comment.userId}`} className="shrink-0">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-700 font-black rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-emerald-500 hover:ring-offset-2 transition-all">
-                    {comment.authorAvatarURL ? (
-                        <img src={comment.authorAvatarURL} alt={comment.authorName} className="w-full h-full object-cover" />
-                    ) : (
-                        initial
-                    )}
-                </div>
+                {/* Replaced static image with dynamic ProfilePfp */}
+                <ProfilePfp 
+                    userId={comment.userId} 
+                    fallbackName={comment.authorName || '?'} 
+                    className="w-12 h-12 hover:ring-2 hover:ring-emerald-500 hover:ring-offset-2 transition-all" 
+                />
             </Link>
 
             <div className="flex-1 min-w-0">

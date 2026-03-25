@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import Image from 'next/image';
 import { useTransition, animated } from '@react-spring/web';
+import ProfilePfp from '@/components/profile/ProfilePfp';
 
 export default function UserMenu() {
     const { user, isLoading, logout } = useAuth();
@@ -20,6 +20,7 @@ export default function UserMenu() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
     const menuTransitions = useTransition(isOpen, {
         from: { opacity: 0, transform: 'translateY(-10px) scale(0.95)' },
         enter: { opacity: 1, transform: 'translateY(0px) scale(1)' },
@@ -42,9 +43,6 @@ export default function UserMenu() {
         );
     }
 
-    const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
-    const avatarUrl = (user as any).profile?.avatarURL || null;
-
     return (
         <div className="relative" ref={menuRef}>
             <button
@@ -54,21 +52,14 @@ export default function UserMenu() {
                 <p className="opacity-0 sm:opacity-100 text-sm md:text-lg font-bold text-slate-700 max-w-25 truncate">
                     {user.name}
                 </p>
-                <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center bg-emerald-500 text-white font-bold rounded-full overflow-hidden shrink-0 border-2 border-emerald-100">
-                    {avatarUrl ? (
-                        <Image
-                            src={avatarUrl}
-                            alt={`${user.name}'s profile picture`}
-                            width={80}
-                            height={80}
-                            priority
-                            className="object-cover w-full h-full transition-opacity duration-300"
-                            onLoadingComplete={(img) => img.classList.remove("opacity-0")}
-                        />
-                    ) : (
-                        initial
-                    )}
-                </div>
+                
+                {/* Replaced static image logic with dynamic ProfilePfp */}
+                <ProfilePfp 
+                    userId={user.$id} 
+                    fallbackName={user.name || '?'} 
+                    className="w-12 h-12 md:w-14 md:h-14 border-2 border-emerald-100 shadow-sm transition-opacity duration-300"
+                />
+
             </button>
             {menuTransitions((style, item) =>
                 item ? (
