@@ -11,7 +11,7 @@ interface RecentCommentsProps {
     isOwnProfile: boolean;
     currentUserId?: string;
     currentUserIsVerified: boolean;
-    currentUserFollows?: string[]; 
+    currentUserFollows?: string[];
 }
 
 export default function RecentComments({
@@ -19,7 +19,7 @@ export default function RecentComments({
     isOwnProfile,
     currentUserId,
     currentUserIsVerified,
-    currentUserFollows = [] 
+    currentUserFollows = []
 }: RecentCommentsProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [enrichedComments, setEnrichedComments] = useState<any[]>([]);
@@ -55,7 +55,7 @@ export default function RecentComments({
                         case 'article': return '/articles';
                         case 'data': return '/data';
                         case 'tools-technical': return '/tools-technical';
-                        default: return `/${type}`; 
+                        default: return `/${type}`;
                     }
                 };
 
@@ -100,24 +100,29 @@ export default function RecentComments({
                 ) : (
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-4">
-                            {displayedComments.map(comment => (
-                                <div
-                                    key={comment.$id}
-                                    onClick={() => {
-                                        console.log("Navigating to:", comment.postUrl);
-                                        router.push(comment.postUrl);
-                                    }}
-                                    className="block group transition-all cursor-pointer"
-                                >
-                                    <div className="rounded-2xl border border-transparent group-hover:border-emerald-100 group-hover:shadow-sm transition-all bg-white">
-                                        <CommentItem
-                                            comment={comment}
-                                            currentUserId={currentUserId}
-                                            currentUserIsVerified={currentUserIsVerified}
-                                        />
+                            {displayedComments.map(comment => {
+                                const isFollowedByMe = currentUserFollows.includes(comment.userId);
+
+                                return (
+                                    <div
+                                        key={comment.$id}
+                                        onClick={() => {
+                                            console.log("Navigating to:", comment.postUrl);
+                                            router.push(comment.postUrl);
+                                        }}
+                                        className="block group transition-all cursor-pointer"
+                                    >
+                                        <div className="rounded-2xl border border-transparent group-hover:border-emerald-100 group-hover:shadow-sm transition-all bg-white">
+                                            <CommentItem
+                                                comment={comment}
+                                                currentUserId={currentUserId}
+                                                currentUserIsVerified={currentUserIsVerified}
+                                                initialIsFollowing={isFollowedByMe}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         {hasMoreComments && (

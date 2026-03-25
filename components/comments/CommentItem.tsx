@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { FiUserPlus, FiCheck } from 'react-icons/fi';
 import VerificationBadge from '../profile/VerificationBadge';
-import ProfilePfp from '../profile/ProfilePfp'; // <-- Make sure this path matches where you saved the component
+import ProfilePfp from '../profile/ProfilePfp'; 
+import FollowButton from '../profile/FollowButton';
 
 interface CommentItemProps {
     comment: any;
@@ -20,33 +19,12 @@ export default function CommentItem({
     initialIsFollowing = false 
 }: CommentItemProps) {
     
-    const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
-    const [isProcessing, setIsProcessing] = useState(false);
-
     const isOwnComment = currentUserId === comment.userId;
-
-    const handleFollow = async () => {
-        if (!currentUserIsVerified) {
-            alert("You must verify your email to follow users.");
-            return;
-        }
-
-        setIsProcessing(true);
-        try {
-            // Your follow logic here
-            setIsFollowing(!isFollowing);
-        } catch (error) {
-            console.error("Failed to follow user:", error);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex gap-4 transition-all hover:shadow-md">
             
             <Link href={`/profile/${comment.userId}`} className="shrink-0">
-                {/* Replaced static image with dynamic ProfilePfp */}
                 <ProfilePfp 
                     userId={comment.userId} 
                     fallbackName={comment.authorName || '?'} 
@@ -72,31 +50,13 @@ export default function CommentItem({
                     </div>
 
                     {currentUserId && !isOwnComment && (
-                        <button
-                            onClick={handleFollow}
-                            disabled={isProcessing || !currentUserIsVerified}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all
-                                ${!currentUserIsVerified 
-                                    ? 'bg-slate-50 text-slate-400 cursor-not-allowed opacity-50'
-                                    : isFollowing 
-                                        ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' 
-                                        : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                                }
-                            `}
-                            title={!currentUserIsVerified ? "Verify your email to follow users" : ""}
-                        >
-                            {isFollowing ? (
-                                <>
-                                    <FiCheck className="w-3.5 h-3.5" />
-                                    <span>Following</span>
-                                </>
-                            ) : (
-                                <>
-                                    <FiUserPlus className="w-3.5 h-3.5" />
-                                    <span>Follow</span>
-                                </>
-                            )}
-                        </button>
+                        <FollowButton 
+                            targetUserId={comment.userId}
+                            currentUserId={currentUserId}
+                            currentUserIsVerified={currentUserIsVerified}
+                            initialIsFollowing={initialIsFollowing}
+                            variant="comment"
+                        />
                     )}
                 </div>
 

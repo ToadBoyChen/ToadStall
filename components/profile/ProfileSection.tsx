@@ -14,7 +14,7 @@ import ProfileHeader from './ProfileHeader';
 
 const ProfileVerificationBanner = ({ profile, isOwnProfile, handleSendVerification, isSendingVerification, verificationStatus }: any) => {
     if (!isOwnProfile) return null;
-    
+
     return (
         <div className=''>
             {!profile.isVerified && (
@@ -117,25 +117,25 @@ interface ProfileSectionProps {
 }
 
 export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
-    const { user: currentUser, isLoading: authLoading, checkUser } = useAuth();
+    const { user: currentUser, isLoading: authLoading } = useAuth();
     const isOwnProfile = currentUser?.$id === targetUserId;
     const currentUserIsVerified = currentUser?.profile?.isVerified === true;
-    
+
     const [profile, setProfile] = useState<any>(null);
     const [stats, setStats] = useState({ comments: 0, votes: 0, followers: 0, following: 0 });
     const [userComments, setUserComments] = useState<any[]>([]);
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
-    const [currentUserFollowingIds, setCurrentUserFollowingIds] = useState<string[]>([]); // <-- FIX: State to hold current user's follows
-    
+    const [currentUserFollowingIds, setCurrentUserFollowingIds] = useState<string[]>([]);
+
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState('');
     const [editFile, setEditFile] = useState<File | null>(null);
-    const [isSaving, setIsSaving] = useState(false);
+    const [isSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isSendingVerification, setIsSendingVerification] = useState(false);
-    const [verificationStatus, setVerificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [isSendingVerification] = useState(false);
+    const [verificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [isFollowing, setIsFollowing] = useState(false);
     const [followDocId, setFollowDocId] = useState<string | null>(null);
     const [isProcessingFollow, setIsProcessingFollow] = useState(false);
@@ -145,7 +145,6 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
 
         const fetchUserData = async () => {
             try {
-                // 1. Fetch Profile
                 const profileRes = await databases.listDocuments(
                     appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
                     [Query.equal('userID', targetUserId), Query.limit(1)]
@@ -165,7 +164,6 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                     setEditBio(fetchedProfile.bio || '');
                 }
 
-                // 2. Fetch Comments & Votes
                 const commentsRes = await databases.listDocuments(
                     appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_COMMENTS_COLLECTION_ID as string,
                     [Query.equal('userId', targetUserId), Query.orderDesc('$createdAt'), Query.limit(10)]
@@ -177,7 +175,6 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                     [Query.equal('userId', targetUserId), Query.limit(1)]
                 );
 
-                // 3. Fetch Network Stats (Target User)
                 const followersConnections = await databases.listDocuments(
                     appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_FOLLOWERS_COLLECTION_ID as string,
                     [Query.equal('followingId', targetUserId), Query.limit(20)]
@@ -214,15 +211,13 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                     setFollowingList(fRes.documents);
                 }
 
-                // 5. FIX: Fetch everything the *Current Logged In User* follows for the RecentComments feed
                 if (currentUser) {
                     const currentUserFollowsRes = await databases.listDocuments(
                         appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_FOLLOWERS_COLLECTION_ID as string,
                         [Query.equal('followerId', currentUser.$id)]
                     );
                     setCurrentUserFollowingIds(currentUserFollowsRes.documents.map(d => d.followingId));
-                    
-                    // Set status for the main follow button on the profile header
+
                     const specificFollowDoc = currentUserFollowsRes.documents.find(d => d.followingId === targetUserId);
                     if (specificFollowDoc && !isOwnProfile) {
                         setIsFollowing(true);
@@ -256,7 +251,7 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                 setStats(prev => ({ ...prev, followers: prev.followers - 1 }));
                 setFollowersList(prev => prev.filter(f => f.userID !== currentUser.$id));
                 // Update the array passed to comments
-                setCurrentUserFollowingIds(prev => prev.filter(id => id !== targetUserId)); 
+                setCurrentUserFollowingIds(prev => prev.filter(id => id !== targetUserId));
             } else {
                 const newFollowDoc = await databases.createDocument(
                     appwriteDatabaseId, process.env.NEXT_PUBLIC_APPWRITE_FOLLOWERS_COLLECTION_ID as string, ID.unique(),
@@ -291,30 +286,30 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
     return (
         <div className="max-w-4xl mx-auto w-full px-4 py-12">
             <div className="rounded-3xl mb-8">
-                
-                <ProfileHeader 
-                    profile={profile} isOwnProfile={isOwnProfile} currentUser={currentUser} 
+
+                <ProfileHeader
+                    profile={profile} isOwnProfile={isOwnProfile} currentUser={currentUser}
                     displayAvatar={displayAvatar} initial={initial} joinedDate={joinedDate}
-                    isEditing={isEditing} setIsEditing={setIsEditing} editFile={editFile} setEditFile={setEditFile} 
-                    handleSaveProfile={handleSaveProfile} isSaving={isSaving} handleFollowToggle={handleFollowToggle} 
-                    isProcessingFollow={isProcessingFollow} isFollowing={isFollowing} 
-                    currentUserIsVerified={currentUserIsVerified} fileInputRef={fileInputRef} 
+                    isEditing={isEditing} setIsEditing={setIsEditing} editFile={editFile} setEditFile={setEditFile}
+                    handleSaveProfile={handleSaveProfile} isSaving={isSaving} handleFollowToggle={handleFollowToggle}
+                    isProcessingFollow={isProcessingFollow} isFollowing={isFollowing}
+                    currentUserIsVerified={currentUserIsVerified} fileInputRef={fileInputRef}
                 />
 
-                <ProfileVerificationBanner 
-                    profile={profile} isOwnProfile={isOwnProfile} handleSendVerification={handleSendVerification} 
-                    isSendingVerification={isSendingVerification} verificationStatus={verificationStatus} 
+                <ProfileVerificationBanner
+                    profile={profile} isOwnProfile={isOwnProfile} handleSendVerification={handleSendVerification}
+                    isSendingVerification={isSendingVerification} verificationStatus={verificationStatus}
                 />
 
                 <div className="py-24 px-4 sm:px-8 bg-white rounded-b-3xl">
-                    
-                    <ProfileAboutActivity 
-                        profile={profile} isOwnProfile={isOwnProfile} isEditing={isEditing} 
-                        editBio={editBio} setEditBio={setEditBio} stats={stats} 
+
+                    <ProfileAboutActivity
+                        profile={profile} isOwnProfile={isOwnProfile} isEditing={isEditing}
+                        editBio={editBio} setEditBio={setEditBio} stats={stats}
                     />
 
-                    <ProfileNetwork 
-                        followersList={followersList} followingList={followingList} stats={stats} 
+                    <ProfileNetwork
+                        followersList={followersList} followingList={followingList} stats={stats}
                     />
 
                 </div>

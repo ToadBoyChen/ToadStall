@@ -1,6 +1,7 @@
-import { FiCamera, FiUserCheck, FiUserPlus } from "react-icons/fi";
+import { FiCamera } from "react-icons/fi";
 import VerificationBadge from "./VerificationBadge";
-import ProfilePfp from "./ProfilePfp"; // Import the new component
+import ProfilePfp from "./ProfilePfp"; 
+import FollowButton from "./FollowButton"; // <-- Import new component
 
 export default function ProfileHeader({ 
     profile, 
@@ -10,7 +11,7 @@ export default function ProfileHeader({
     initial, 
     isEditing, 
     setIsEditing,
-    editFile, // Added to check for active local file previews
+    editFile, 
     setEditFile, 
     handleSaveProfile, 
     isSaving, 
@@ -34,7 +35,6 @@ export default function ProfileHeader({
                 <div className="flex flex-col items-center group">
                     <div className="relative w-24 h-24 bg-emerald-500 text-white text-4xl font-black rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden shrink-0 mb-4">
                         
-                        {/* Logic: Show local file preview if editing, otherwise use live PFP component */}
                         {isEditing && editFile ? (
                             <img src={displayAvatar} alt="Avatar Preview" className="w-full h-full object-cover" />
                         ) : (
@@ -80,15 +80,16 @@ export default function ProfileHeader({
                     )
                 ) : (
                     currentUser && (
-                        <button
-                            onClick={handleFollowToggle}
-                            disabled={!currentUserIsVerified || isProcessingFollow}
-                            className={`px-6 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors
-                            ${!currentUserIsVerified ? 'bg-white/10 text-white/50 cursor-not-allowed border border-white/10' : isFollowing ? 'bg-emerald-200 text-emerald-900 hover:bg-emerald-300' : 'bg-emerald-500 hover:bg-emerald-400 text-white'}`}
-                            title={!currentUserIsVerified ? "Verify your email to follow users" : ""}
-                        >
-                            {isFollowing ? <><FiUserCheck className="w-4 h-4" /><span>Following</span></> : <><FiUserPlus className="w-4 h-4" /><span>Follow</span></>}
-                        </button>
+                        <FollowButton
+                            variant="profile"
+                            targetUserId={profile.userID || profile.$id}
+                            currentUserId={currentUser.$id}
+                            currentUserIsVerified={currentUserIsVerified}
+                            
+                            isFollowingOverride={isFollowing}
+                            isProcessingOverride={isProcessingFollow}
+                            onToggleOverride={handleFollowToggle}
+                        />
                     )
                 )}
             </div>
