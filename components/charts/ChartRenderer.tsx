@@ -151,34 +151,42 @@ export default function ChartRenderer({
                     </LineChart>
                 );
 
-            case "pie":
-            case "doughnut":
-                const pieDataKey = dataKeys[0] || "value";
-                const tooManyEntries = safeData.length > 12;
-
-                return (
-                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                        <Tooltip content={<CustomTooltip />} />
-                        <Pie
-                            data={safeData}
-                            innerRadius={type === "doughnut" ? "65%" : 0}
-                            outerRadius="98%"
-                            paddingAngle={type === "doughnut" && !tooManyEntries ? 2 : 0}
-                            dataKey={pieDataKey}
-                            nameKey="label"
-                            stroke="#ffffff"
-                            strokeWidth={type === "pie" && !tooManyEntries ? 2 : 0}
-                        >
-                            {safeData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                        </Pie>
-                        {(!isCompact || dataKeys.length > 1) && !tooManyEntries && (
-                            <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#64748b', paddingTop: '10px' }} />
-                        )}
-                    </PieChart>
-                );
-
+                case "pie": {
+                    const latestData = safeData[safeData.length - 1];
+                    const pieData = dataKeys
+                        .filter(key => !hiddenSeries[key])
+                        .map((key, index) => ({
+                            name: key,
+                            value: Number(latestData[key]) || 0,
+                            color: COLORS[index % COLORS.length]
+                        }));
+    
+                    return (
+                        <PieChart margin={chartMargin}>
+                            <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={isCompact ? "80%" : "90%"}
+                                dataKey="value"
+                                stroke="#ffffff"
+                                strokeWidth={2}
+                            >
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip content={<CustomTooltip />} />
+                            {(!isCompact || dataKeys.length > 1) && (
+                                <Legend 
+                                    onClick={handleLegendClick} 
+                                    iconType="circle" 
+                                    wrapperStyle={{ cursor: 'pointer', fontSize: '12px', color: '#64748b', paddingTop: '10px' }} 
+                                />
+                            )}
+                        </PieChart>
+                    );
+                }
             default:
                 return <p className="text-slate-400 text-center text-sm">Unsupported chart type</p>;
         }

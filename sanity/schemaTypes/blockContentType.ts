@@ -74,7 +74,7 @@ export const blockContentType = defineType({
                     name: 'chartType',
                     title: 'Chart Type',
                     type: 'string',
-                    options: { list: ['bar', 'line', 'pie', 'doughnut'] }
+                    options: { list: ['bar', 'line', 'pie'] }
                 }),
                 defineField({
                     name: 'smartYAxis',
@@ -251,7 +251,6 @@ export const blockContentType = defineType({
                             { title: 'Line Chart', value: 'line' },
                             { title: 'Bar Chart', value: 'bar' },
                             { title: 'Pie Chart', value: 'pie' },
-                            { title: 'Doughnut Chart', value: 'doughnut' }
                         ]
                     },
                     initialValue: 'line'

@@ -15,7 +15,7 @@ interface Country { code: string; name: string }
 interface DataExplorerProps {
     indicator: string;
     countries?: { countryCode: string }[];
-    countryCode?: string; // legacy
+    countryCode?: string;
     startYear?: string;
     endYear?: string;
     defaultChartType?: "line" | "bar" | "pie";
