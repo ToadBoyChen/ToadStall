@@ -51,9 +51,7 @@ export default function DataExplorer({
     const [indicatorLabel, setIndicatorLabel] = useState("");
     const [startYear, setStartYear] = useState(initialStart);
     const [endYear, setEndYear] = useState(initialEnd);
-    const [chartType, setChartType] = useState<"line" | "bar" | "pie">(
-        defaultChartType === "doughnut" ? "line" : defaultChartType
-    );
+    const [chartType, setChartType] = useState<"line" | "bar" | "pie">(defaultChartType);
     const [isSmartY, setIsSmartY] = useState(smartYAxis);
 
     const [chartData, setChartData] = useState<any[]>([]);
