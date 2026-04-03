@@ -19,9 +19,29 @@ export const communityType = defineType({
       type: 'slug',
       options: {source: 'title', maxLength: 96},
     }),
+
+    defineField({
+      name: 'author',
+      title: 'Official Author (Sanity)',
+      type: 'reference',
+      to: [{type: 'author'}],
+      description: 'Use this if a staff member wrote the post. Otherwise, rely on the Appwrite ID below.',
+    }),
+    defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'category'}],
+        }
+      ],
+    }),
+
     defineField({
       name: 'authorName',
-      title: 'Author Name',
+      title: 'Author Name (Appwrite User)',
       type: 'string',
     }),
     defineField({

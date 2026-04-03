@@ -1,35 +1,58 @@
-// fetchIndicators.mjs
 import fs from 'fs';
 import path from 'path';
 
+const POPULAR_INDICATORS = [
+    'NY.GDP.MKTP.CD',
+    'NY.GDP.PCAP.CD',
+    'SP.POP.TOTL',
+    'SP.DYN.LE00.IN',
+    'EN.ATM.CO2E.PC',
+    'IT.NET.USER.ZS',
+    'SL.UEM.TOTL.ZS',
+    'FP.CPI.TOTL.ZG',
+    'SE.PRM.ENRR',
+    'SH.DYN.MORT'
+];
+
 async function generateIndicatorsList() {
-    console.log("Fetching World Development Indicators...");
+    const customIndicators = process.argv.slice(2);
+    
+    const allIndicatorIds = [...new Set([...POPULAR_INDICATORS, ...customIndicators])];
+    
+    console.log(`Fetching ${allIndicatorIds.length} specific World Bank Indicators...`);
 
     try {
-        // We use source=2 to get the premium/most popular World Bank indicators
-        // per_page=250 grabs a huge chunk of the best ones at once
-        const url = 'https://api.worldbank.org/v2/indicator?source=2&format=json&per_page=250';
-        
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`API responded with status: ${response.status}`);
-        
-        const json = await response.json();
-        const rawIndicators = json[1];
+        const fetchPromises = allIndicatorIds.map(async (id) => {
+            const url = `https://api.worldbank.org/v2/indicator/${id}?format=json`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.warn(`⚠️ Warning: HTTP error ${response.status} for indicator '${id}'`);
+                return null;
+            }
+            
+            const json = await response.json();
+            
+            if (json[1] && json[1].length > 0) {
+                return {
+                    id: json[1][0].id,
+                    label: json[1][0].name
+                };
+            } else {
+                console.warn(`⚠️ Warning: Indicator ID '${id}' not found in the World Bank database.`);
+                return null;
+            }
+        });
 
-        if (!rawIndicators || rawIndicators.length === 0) {
-            throw new Error("No indicators found in the response.");
+        const results = await Promise.all(fetchPromises);
+        
+        const formattedIndicators = results.filter(ind => ind !== null);
+
+        if (formattedIndicators.length === 0) {
+            throw new Error("No valid indicators were fetched. Check your connection or IDs.");
         }
 
-        // Map them into our lean { id, label } format
-        const formattedIndicators = rawIndicators.map(ind => ({
-            id: ind.id,
-            label: ind.name
-        }));
-
-        // Determine where to save the file (adjust 'lib' if your folder is named differently)
         const outputPath = path.join(process.cwd(), 'lib', 'worldBankIndicators.json');
-
-        // Write the file beautifully formatted
         fs.writeFileSync(outputPath, JSON.stringify(formattedIndicators, null, 4));
 
         console.log(`✅ Success! Saved ${formattedIndicators.length} indicators to ${outputPath}`);

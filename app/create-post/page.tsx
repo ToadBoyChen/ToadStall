@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { FiFeather } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
+import { sanityClient } from '@/lib/sanity'; // Adjust path if needed based on your setup
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 
@@ -13,6 +14,11 @@ const MDEditor = dynamic(
   { ssr: false, loading: () => <p className="text-slate-400 p-4">Loading editor...</p> }
 );
 
+interface Category {
+    _id: string;
+    title: string;
+}
+
 export default function CreatePostPage() {
     const { user, isLoading } = useAuth();
     const router = useRouter();
@@ -20,8 +26,28 @@ export default function CreatePostPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isOpenDiscussion, setIsOpenDiscussion] = useState(false);
+    
+    // --- NEW: Category State ---
+    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    // Fetch Categories from Sanity on load
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                // Adjust this GROQ query if your category field is named differently
+                const query = `*[_type == "category"]{ _id, title }`;
+                const cats = await sanityClient.fetch(query);
+                setAvailableCategories(cats);
+            } catch (err) {
+                console.error("Failed to fetch categories:", err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     // Route Protection
     useEffect(() => {
@@ -42,6 +68,15 @@ export default function CreatePostPage() {
         );
     }
 
+    // Toggle Category Selection
+    const handleToggleCategory = (id: string) => {
+        setSelectedCategoryIds(prev => 
+            prev.includes(id) 
+                ? prev.filter(catId => catId !== id) 
+                : [...prev, id]
+        );
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) return;
@@ -58,7 +93,9 @@ export default function CreatePostPage() {
                     content: content.trim(),
                     authorId: user.$id,
                     authorName: user.profile?.username || user.name,
-                    status: isOpenDiscussion ? 'open' : undefined
+                    status: isOpenDiscussion ? 'open' : undefined,
+                    // --- NEW: Send selected categories to the backend ---
+                    categoryIds: selectedCategoryIds
                 })
             });
 
@@ -123,7 +160,30 @@ export default function CreatePostPage() {
                             />
                         </div>
 
-                        {/* NEW: Discussion Toggle */}
+                        {/* NEW: Category Selector UI */}
+                        {availableCategories.length > 0 && (
+                            <div className="space-y-3">
+                                <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">Select Topics</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {availableCategories.map((cat) => (
+                                        <button
+                                            key={cat._id}
+                                            type="button"
+                                            onClick={() => handleToggleCategory(cat._id)}
+                                            className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${
+                                                selectedCategoryIds.includes(cat._id)
+                                                    ? 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600'
+                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-200 hover:bg-emerald-50'
+                                            }`}
+                                        >
+                                            {cat.title}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Discussion Toggle */}
                         <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input 
