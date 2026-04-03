@@ -17,6 +17,7 @@ const MDEditor = dynamic(
 interface Category {
     _id: string;
     title: string;
+    icon?: string;
 }
 
 export default function CreatePostPage() {
@@ -27,9 +28,12 @@ export default function CreatePostPage() {
     const [content, setContent] = useState('');
     const [isOpenDiscussion, setIsOpenDiscussion] = useState(false);
     
-    // --- NEW: Category State ---
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+    const [showNewCategoryForm, setShowNewCategoryForm] = useState(false);
+    const [newCategoryTitle, setNewCategoryTitle] = useState('');
+    const [newCategoryIcon, setNewCategoryIcon] = useState('');
+    const [isCreatingCategory, setIsCreatingCategory] = useState(false);
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -38,8 +42,7 @@ export default function CreatePostPage() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                // Adjust this GROQ query if your category field is named differently
-                const query = `*[_type == "category"]{ _id, title }`;
+                const query = `*[_type == "category"] | order(title asc) { _id, title, icon }`;
                 const cats = await sanityClient.fetch(query);
                 setAvailableCategories(cats);
             } catch (err) {
@@ -68,13 +71,36 @@ export default function CreatePostPage() {
         );
     }
 
-    // Toggle Category Selection
     const handleToggleCategory = (id: string) => {
-        setSelectedCategoryIds(prev => 
-            prev.includes(id) 
-                ? prev.filter(catId => catId !== id) 
+        setSelectedCategoryIds(prev =>
+            prev.includes(id)
+                ? prev.filter(catId => catId !== id)
                 : [...prev, id]
         );
+    };
+
+    const handleCreateCategory = async () => {
+        if (!newCategoryTitle.trim()) return;
+        setIsCreatingCategory(true);
+        try {
+            const res = await fetch('/api/community/category', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newCategoryTitle.trim(), icon: newCategoryIcon.trim() }),
+            });
+            if (!res.ok) throw new Error('Failed to create category');
+            const { category } = await res.json();
+            const newCat: Category = { _id: category._id, title: category.title, icon: category.icon };
+            setAvailableCategories(prev => [...prev, newCat].sort((a, b) => a.title.localeCompare(b.title)));
+            setSelectedCategoryIds(prev => [...prev, category._id]);
+            setNewCategoryTitle('');
+            setNewCategoryIcon('');
+            setShowNewCategoryForm(false);
+        } catch (err) {
+            console.error('Failed to create category:', err);
+        } finally {
+            setIsCreatingCategory(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -160,28 +186,73 @@ export default function CreatePostPage() {
                             />
                         </div>
 
-                        {/* NEW: Category Selector UI */}
-                        {availableCategories.length > 0 && (
-                            <div className="space-y-3">
-                                <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">Select Topics</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {availableCategories.map((cat) => (
+                        {/* Category Selector */}
+                        <div className="space-y-3">
+                            <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">Select Topics</p>
+                            <div className="flex flex-wrap gap-2">
+                                {availableCategories.map((cat) => (
+                                    <button
+                                        key={cat._id}
+                                        type="button"
+                                        onClick={() => handleToggleCategory(cat._id)}
+                                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border flex items-center gap-1.5 ${
+                                            selectedCategoryIds.includes(cat._id)
+                                                ? 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600'
+                                                : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-200 hover:bg-emerald-50'
+                                        }`}
+                                    >
+                                        {cat.icon && <span>{cat.icon}</span>}
+                                        {cat.title}
+                                    </button>
+                                ))}
+
+                                {/* New category form or trigger */}
+                                {showNewCategoryForm ? (
+                                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5">
+                                        <input
+                                            type="text"
+                                            placeholder="😀"
+                                            value={newCategoryIcon}
+                                            onChange={(e) => setNewCategoryIcon(e.target.value)}
+                                            maxLength={2}
+                                            className="w-9 text-center bg-transparent outline-none text-base"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Category name"
+                                            value={newCategoryTitle}
+                                            onChange={(e) => setNewCategoryTitle(e.target.value)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCreateCategory(); } }}
+                                            className="bg-transparent outline-none text-sm font-bold text-slate-700 placeholder:text-slate-400 w-32"
+                                            autoFocus
+                                        />
                                         <button
-                                            key={cat._id}
                                             type="button"
-                                            onClick={() => handleToggleCategory(cat._id)}
-                                            className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${
-                                                selectedCategoryIds.includes(cat._id)
-                                                    ? 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600'
-                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-200 hover:bg-emerald-50'
-                                            }`}
+                                            onClick={handleCreateCategory}
+                                            disabled={!newCategoryTitle.trim() || isCreatingCategory}
+                                            className="text-emerald-600 font-bold text-sm hover:text-emerald-700 disabled:opacity-40"
                                         >
-                                            {cat.title}
+                                            {isCreatingCategory ? '...' : 'Add'}
                                         </button>
-                                    ))}
-                                </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => { setShowNewCategoryForm(false); setNewCategoryTitle(''); setNewCategoryIcon(''); }}
+                                            className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNewCategoryForm(true)}
+                                        className="px-4 py-2 rounded-full text-sm font-bold border border-dashed border-slate-300 text-slate-400 hover:border-emerald-400 hover:text-emerald-600 transition-all"
+                                    >
+                                        + New
+                                    </button>
+                                )}
                             </div>
-                        )}
+                        </div>
 
                         {/* Discussion Toggle */}
                         <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">

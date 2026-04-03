@@ -6,7 +6,8 @@ const QUERY = `*[ _type == "community" && defined(slug.current) ] | order(publis
     "slug": slug.current,
     authorName,
     publishedAt,
-    "fullText": pt::text(body)
+    "fullText": pt::text(body),
+    "categories": categories[]->{ _id, title, icon }
   }`;
 
 export default async function CommunityPage() {
@@ -21,7 +22,7 @@ export default async function CommunityPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.map((posts: any) => (
-            <ContentCard 
+            <ContentCard
               key={posts._id}
               id={posts._id}
               title={posts.title}
@@ -30,6 +31,7 @@ export default async function CommunityPage() {
               text={posts.fullText}
               authorName={posts.authorName}
               readOnlyEngagement={true}
+              categories={posts.categories}
             />
           ))}
         </div>

@@ -8,8 +8,9 @@ const QUERY = `*[ _type == "article" && slug.current == $slug ][0] {
     title,
     publishedAt,
     body,
-    "authorName": author->name, // Grab the string name
-    mainImage
+    "authorName": author->name,
+    mainImage,
+    "categories": categories[]->{ _id, title, icon }
 }`;
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -19,7 +20,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     if (!post) notFound();
 
     return (
-        <PageContent 
+        <PageContent
             id={post._id}
             title={post.title}
             publishedAt={post.publishedAt}
@@ -27,6 +28,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             mainImage={post.mainImage}
             body={post.body}
             portableTextComponents={sharedPortableTextComponents}
+            categories={post.categories}
         />
     );
 }

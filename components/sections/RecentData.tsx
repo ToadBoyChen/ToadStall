@@ -9,7 +9,8 @@ const RECENT_POSTS_QUERY = `
     title,
     "slug": slug.current,
     publishedAt,
-    "fullText": pt::text(body)
+    "fullText": pt::text(body),
+    "categories": categories[]->{ _id, title, icon }
   }
 `;
 
@@ -38,6 +39,8 @@ export default async function RecentData() {
                         publishedAt={post.publishedAt}
                         text={post.fullText}
                         readOnlyEngagement={true}
+                        categories={post.categories}
+                        categoryEmojiOnly={true}
                     />
                 ))}
             </div>

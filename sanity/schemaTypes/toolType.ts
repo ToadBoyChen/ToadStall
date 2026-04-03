@@ -26,6 +26,12 @@ export const toolType = defineType({
       description: 'Direct link to the tool.',
     }),
     defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'category' }] }],
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Short Description',
       type: 'text',

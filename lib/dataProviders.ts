@@ -17,17 +17,19 @@ export interface DataProvider {
     ) => Promise<ExplorerDataPoint[]>;
 }
 
+// Module-level cache so the countries list is only fetched once per page session.
+let countriesCache: { code: string; name: string }[] | null = null;
+
 export const WorldBankProvider: DataProvider = {
     id: 'worldbank',
     name: 'World Bank API',
 
     getCountries: async () => {
-        const res = await fetch('https://api.worldbank.org/v2/country?format=json&per_page=300');
-        const json = await res.json();
-        return json[1]
-            .filter((c: any) => c.region.id !== "NA")
-            .map((c: any) => ({ code: c.id, name: c.name }))
-            .sort((a: any, b: any) => a.name.localeCompare(b.name));
+        if (countriesCache) return countriesCache;
+        const res = await fetch('/api/worldbank/countries');
+        if (!res.ok) throw new Error('Failed to fetch countries');
+        countriesCache = await res.json();
+        return countriesCache!;
     },
 
     getIndicators: async () => {
@@ -35,28 +37,30 @@ export const WorldBankProvider: DataProvider = {
             const indicators = (await import('./worldBankIndicators.json')).default;
             return indicators;
         } catch (error) {
-            console.error("Failed to load indicators:", error);
+            console.error('Failed to load indicators:', error);
             return [];
         }
     },
 
     fetchData: async (indicatorId, indicatorLabel, countryCode, startYear, endYear) => {
-        const url = `https://api.worldbank.org/v2/country/${countryCode}/indicator/${indicatorId}?format=json&date=${startYear}:${endYear}&per_page=100`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Failed to fetch from World Bank");
+        const params = new URLSearchParams({
+            indicator: indicatorId,
+            country: countryCode,
+            start: startYear,
+            end: endYear,
+        });
+        const res = await fetch(`/api/worldbank?${params}`);
+        if (!res.ok) throw new Error('Failed to fetch data');
 
-        const json = await res.json();
-        if (json[0]?.message) throw new Error(json[0].message[0].value);
+        const { data, countryName, error } = await res.json();
+        if (error) throw new Error(error);
+        if (!data || data.length === 0) return [];
 
-        const rawData = json[1];
-        if (!rawData || rawData.length === 0) return [];
-
-        return rawData
-            .filter((item: any) => item.value !== null)
-            .sort((a: any, b: any) => parseInt(a.date) - parseInt(b.date))
-            .map((item: any) => ({
-                label: item.date,
-                [indicatorLabel]: item.value
-            }));
-    }
+        // Re-key to use indicatorLabel so ChartRenderer labels the series correctly.
+        return data.map((point: any) => {
+            const { label, ...rest } = point;
+            const value = Object.values(rest)[0] as number;
+            return { label, [indicatorLabel]: value };
+        });
+    },
 };

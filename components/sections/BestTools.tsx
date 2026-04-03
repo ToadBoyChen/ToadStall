@@ -10,7 +10,8 @@ const RECENT_POSTS_QUERY = `
     "slug": slug.current,
     _createdAt,
     pricing,
-    "excerpt": coalesce(excerpt, array::join(string::split((pt::text(body)), "")[0..100], "") + "...")
+    "excerpt": coalesce(excerpt, array::join(string::split((pt::text(body)), "")[0..100], "") + "..."),
+    "categories": categories[]->{ _id, title, icon }
   }
 `;
 
@@ -39,6 +40,8 @@ export default async function BestTools() {
                         publishedAt={post._createdAt}
                         text={post.excerpt}
                         readOnlyEngagement={true}
+                        categories={post.categories}
+                        categoryEmojiOnly={true}
                     />
                 ))}
             </div>

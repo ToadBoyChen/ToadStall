@@ -159,11 +159,44 @@ export const blockContentType = defineType({
                     }
                 }),
                 defineField({
-                    name: 'wbCountry',
-                    title: 'Country Code (ISO3)',
-                    type: 'string',
-                    description: 'e.g., USA, GBR, WLD (for Global). Defaults to WLD if empty.',
+                    name: 'wbSeries',
+                    title: 'Countries / Series',
+                    description: 'Add one entry per country — each becomes a separate line or bar on the chart.',
+                    type: 'array',
                     hidden: ({ parent }) => parent?.dataSource !== 'worldbank',
+                    of: [
+                        defineArrayMember({
+                            type: 'object',
+                            fields: [
+                                defineField({
+                                    name: 'countryCode',
+                                    title: 'Country Code (ISO3)',
+                                    type: 'string',
+                                    description: 'e.g., USA, GBR, CHN, WLD',
+                                    validation: Rule => Rule.required()
+                                }),
+                                defineField({
+                                    name: 'seriesLabel',
+                                    title: 'Label (Optional)',
+                                    type: 'string',
+                                    description: 'Override the country name shown in the legend, e.g. "United Kingdom"'
+                                }),
+                            ],
+                            preview: {
+                                select: { title: 'seriesLabel', subtitle: 'countryCode' },
+                                prepare({ title, subtitle }) {
+                                    return { title: title || subtitle, subtitle: title ? subtitle : undefined }
+                                }
+                            }
+                        })
+                    ]
+                }),
+                // Kept for backward compatibility with existing blocks — hidden in editor
+                defineField({
+                    name: 'wbCountry',
+                    title: 'Country Code (legacy)',
+                    type: 'string',
+                    hidden: true,
                 }),
                 defineField({
                     name: 'startYear',
@@ -233,11 +266,35 @@ export const blockContentType = defineType({
                     }
                 }),
                 defineField({
+                    name: 'countries',
+                    title: 'Countries',
+                    description: 'Add one or more countries to compare. Users can add more interactively.',
+                    type: 'array',
+                    of: [
+                        defineArrayMember({
+                            type: 'object',
+                            fields: [
+                                defineField({
+                                    name: 'countryCode',
+                                    title: 'Country Code (ISO3)',
+                                    type: 'string',
+                                    description: 'e.g., USA, GBR, CHN, WLD',
+                                    validation: Rule => Rule.required()
+                                }),
+                            ],
+                            preview: {
+                                select: { title: 'countryCode' },
+                                prepare({ title }) { return { title } }
+                            }
+                        })
+                    ]
+                }),
+                // Kept for backward compatibility — hidden in editor
+                defineField({
                     name: 'countryCode',
-                    title: 'Country Code (ISO3)',
+                    title: 'Country Code (legacy)',
                     type: 'string',
-                    validation: Rule => Rule.required(),
-                    description: 'e.g., USA, GBR, CHN. Use WLD for Global Aggregate.',
+                    hidden: true,
                 }),
                 defineField({
                     name: 'startYear',

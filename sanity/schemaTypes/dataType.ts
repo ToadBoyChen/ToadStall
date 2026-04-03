@@ -31,6 +31,12 @@ export const dataType = defineType({
       type: 'url',
     }),
     defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'category' }] }],
+    }),
+    defineField({
       name: 'lastUpdated',
       title: 'Dataset Last Updated',
       type: 'date',

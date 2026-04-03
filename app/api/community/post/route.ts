@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     try {
         const reqBody = await request.json();
         
-        const { title, content, authorId, authorName, status } = reqBody;
+        const { title, content, authorId, authorName, status, categoryIds } = reqBody;
 
         if (!title || !content || !authorId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -30,6 +30,14 @@ export async function POST(request: Request) {
 
         if (status) {
             sanityDoc.status = status;
+        }
+
+        if (Array.isArray(categoryIds) && categoryIds.length > 0) {
+            sanityDoc.categories = categoryIds.map((id: string) => ({
+                _type: 'reference',
+                _ref: id,
+                _key: id,
+            }));
         }
 
         const result = await writeClient.create(sanityDoc);

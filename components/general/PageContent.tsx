@@ -6,6 +6,12 @@ import { urlFor } from '@/sanity/lib/image';
 import EngagementBar from '@/components/general/EngagementBar';
 import { FiLock } from 'react-icons/fi'; // Imported the lock icon
 
+interface Category {
+    _id: string;
+    title: string;
+    icon?: string;
+}
+
 interface PageContentProps {
     id: string;
     title: string;
@@ -15,7 +21,8 @@ interface PageContentProps {
     body: any;
     portableTextComponents: any;
     headerExtras?: React.ReactNode;
-    status?: string; // 1. Added the status prop
+    status?: string;
+    categories?: Category[];
 }
 
 function getMarkdownString(bodyData: any): string | null {
@@ -41,7 +48,8 @@ export default function PageContent({
     body,
     portableTextComponents,
     headerExtras,
-    status
+    status,
+    categories
 }: PageContentProps) {
     
     // 2. Check if the post is closed
@@ -76,11 +84,23 @@ export default function PageContent({
                     )}
 
                     <header className="mb-8 md:mb-12 border-b border-slate-100 pb-8">
-                        {/* 3. The Top Closed Badge */}
-                        {isClosed && (
-                            <div className="mb-6 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold tracking-wide uppercase">
-                                <FiLock className="w-4 h-4" />
-                                Closed Discussion
+                        {(isClosed || (categories && categories.length > 0)) && (
+                            <div className="flex flex-wrap items-center gap-2 mb-6">
+                                {isClosed && (
+                                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold tracking-wide uppercase">
+                                        <FiLock className="w-4 h-4" />
+                                        Closed Discussion
+                                    </div>
+                                )}
+                                {categories && categories.map((cat) => (
+                                    <span
+                                        key={cat._id}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                    >
+                                        {cat.icon && <span>{cat.icon}</span>}
+                                        {cat.title}
+                                    </span>
+                                ))}
                             </div>
                         )}
 

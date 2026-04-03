@@ -19,6 +19,7 @@ export const sharedPortableTextComponents = {
                     )}
                     <DataExplorer
                         indicator={value.indicator}
+                        countries={value.countries}
                         countryCode={value.countryCode}
                         startYear={value.startYear}
                         endYear={value.endYear}

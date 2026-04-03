@@ -6,6 +6,12 @@ import ExpandableText from '@/components/general/ExpandableText';
 import EngagementBar from '@/components/general/EngagementBar';
 import { getCleanExcerpt } from '@/lib/utils';
 
+interface Category {
+    _id: string;
+    title: string;
+    icon?: string;
+}
+
 interface ContentCardProps {
     id?: string;
     title: string;
@@ -17,19 +23,23 @@ interface ContentCardProps {
     badgeLabel?: string;
     readOnlyEngagement?: boolean;
     visualElement?: React.ReactNode;
+    categories?: Category[];
+    categoryEmojiOnly?: boolean;
 }
 
-export default function ContentCard({ 
-    id, 
-    title, 
-    href, 
-    publishedAt, 
-    text, 
-    authorName, 
+export default function ContentCard({
+    id,
+    title,
+    href,
+    publishedAt,
+    text,
+    authorName,
     status,
     badgeLabel,
     readOnlyEngagement = false,
-    visualElement
+    visualElement,
+    categories,
+    categoryEmojiOnly = false
 }: ContentCardProps) {
     
     const normalizedStatus = status?.toLowerCase();
@@ -79,6 +89,28 @@ export default function ContentCard({
                             {isClosed ? <FiLock className="w-3 h-3" /> : <FiUnlock className="w-3 h-3" />}
                             <span>{isClosed ? 'Closed' : 'Open'}</span>
                         </div>
+                    )}
+                </div>
+            )}
+
+            {categories && categories.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3 pointer-events-none">
+                    {categoryEmojiOnly ? (
+                        categories.filter(cat => cat.icon).map((cat) => (
+                            <span key={cat._id} title={cat.title} className="text-base leading-none">
+                                {cat.icon}
+                            </span>
+                        ))
+                    ) : (
+                        categories.map((cat) => (
+                            <span
+                                key={cat._id}
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                            >
+                                {cat.icon && <span>{cat.icon}</span>}
+                                {cat.title}
+                            </span>
+                        ))
                     )}
                 </div>
             )}

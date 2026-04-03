@@ -49,7 +49,8 @@ export default async function PopularArticles() {
             "authorName": author->name,
             publishedAt,
             "fullText": pt::text(body),
-            "chartBlock": body[_type == "dataVisualizer"][0]
+            "chartBlock": body[_type == "dataVisualizer"][0],
+            "categories": categories[]->{ _id, title, icon }
         }
     `;
 
@@ -83,21 +84,23 @@ export default async function PopularArticles() {
             </div>
             <div className="grid grid-cols-1 gap-6">
                 {posts.map((post: any) => (
-                    <ContentCard 
-                    key={post._id}
-                    id={post._id}
-                    title={post.title}
-                    href={`/community/${post.slug}`}
-                    publishedAt={post.publishedAt}
-                    text={post.fullText}
-                    authorName={post.authorName}
-                    status={post.status}
-                    visualElement={
-                        post.chartBlock ? (
-                            <DynamicChartWrapper blockData={post.chartBlock} isCompact={true} />
-                        ) : null
-                    }
-                />
+                    <ContentCard
+                        key={post._id}
+                        id={post._id}
+                        title={post.title}
+                        href={`/community/${post.slug}`}
+                        publishedAt={post.publishedAt}
+                        text={post.fullText}
+                        authorName={post.authorName}
+                        status={post.status}
+                        categories={post.categories}
+                        categoryEmojiOnly={true}
+                        visualElement={
+                            post.chartBlock ? (
+                                <DynamicChartWrapper blockData={post.chartBlock} isCompact={true} />
+                            ) : null
+                        }
+                    />
                 ))}
             </div>
         </section>

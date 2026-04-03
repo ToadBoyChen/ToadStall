@@ -10,7 +10,8 @@ const QUERY = `*[ _type == "community" && slug.current == $slug ][0] {
     body,
     authorName,
     mainImage,
-    status
+    status,
+    "categories": categories[]->{ _id, title, icon }
 }`;
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
@@ -19,7 +20,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     if (!post) notFound();
 
     return (
-        <PageContent 
+        <PageContent
             id={post._id}
             title={post.title}
             publishedAt={post.publishedAt}
@@ -28,6 +29,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             body={post.body}
             portableTextComponents={sharedPortableTextComponents}
             status={post.status}
+            categories={post.categories}
         />
     );
 }

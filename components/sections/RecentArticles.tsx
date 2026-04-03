@@ -10,7 +10,8 @@ const RECENT_POSTS_QUERY = `
     "slug": slug.current,
     publishedAt,
     "authorName": author->name,
-    "fullText": pt::text(body)
+    "fullText": pt::text(body),
+    "categories": categories[]->{ _id, title, icon }
   }
 `;
 
@@ -39,6 +40,8 @@ export default async function RecentArticles() {
                         text={post.fullText}
                         authorName={post.authorName}
                         readOnlyEngagement={true}
+                        categories={post.categories}
+                        categoryEmojiOnly={true}
                     />
                 ))}
             </div>
