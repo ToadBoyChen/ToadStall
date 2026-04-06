@@ -71,10 +71,18 @@ export default function PostChartDisplay({ config }: { config: ChartConfig }) {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    useEffect(() => { cache.current = {}; }, [startYear, endYear]);
+    const isValidYear = (y: string) =>
+        /^\d{4}$/.test(y) && parseInt(y) >= 1960 && parseInt(y) <= new Date().getFullYear() + 1;
+
+    useEffect(() => {
+        if (isValidYear(startYear) && isValidYear(endYear)) {
+            cache.current = {};
+        }
+    }, [startYear, endYear]);
 
     useEffect(() => {
         if (!indicator || countries.length === 0) return;
+        if (!isValidYear(startYear) || !isValidYear(endYear)) return;
 
         const fetchAll = async () => {
             const uncached = countries.filter(
@@ -119,7 +127,7 @@ export default function PostChartDisplay({ config }: { config: ChartConfig }) {
             }
         };
 
-        const t = setTimeout(fetchAll, 300);
+        const t = setTimeout(fetchAll, 150);
         return () => clearTimeout(t);
     }, [indicator, countries, startYear, endYear]);
 
@@ -285,13 +293,6 @@ export default function PostChartDisplay({ config }: { config: ChartConfig }) {
                 <ChartRenderer type={chartType} data={chartData} isCompact={false} smartYAxis={smartYAxis} />
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                    World Bank Open Data
-                </span>
-                <span>Hover data points for exact values</span>
-            </div>
         </div>
     );
 }

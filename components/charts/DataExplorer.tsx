@@ -82,12 +82,20 @@ export default function DataExplorer({
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    // Invalidate cache when date range changes
-    useEffect(() => { cache.current = {}; }, [startYear, endYear, indicator]);
+    const isValidYear = (y: string) =>
+        /^\d{4}$/.test(y) && parseInt(y) >= 1960 && parseInt(y) <= new Date().getFullYear() + 1;
+
+    // Invalidate cache when date range or indicator changes (only on valid years)
+    useEffect(() => {
+        if (isValidYear(startYear) && isValidYear(endYear)) {
+            cache.current = {};
+        }
+    }, [startYear, endYear, indicator]);
 
     // Fetch only the series not already cached
     useEffect(() => {
         if (!indicator || activeCodes.length === 0) return;
+        if (!isValidYear(startYear) || !isValidYear(endYear)) return;
 
         const fetchAll = async () => {
             const uncached = activeCodes.filter(code => !cache.current[`${code}|${indicator}|${startYear}|${endYear}`]);
@@ -134,7 +142,7 @@ export default function DataExplorer({
             }
         };
 
-        const t = setTimeout(fetchAll, 300);
+        const t = setTimeout(fetchAll, 150);
         return () => clearTimeout(t);
     }, [indicator, activeCodes, startYear, endYear]);
 
@@ -320,14 +328,6 @@ export default function DataExplorer({
                 <ChartRenderer type={chartType} data={chartData} isCompact={false} smartYAxis={isSmartY} />
             </div>
 
-            {/* Footer */}
-            <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    World Bank Open Data
-                </span>
-                <span>Hover data points for exact values</span>
-            </div>
         </div>
     );
 }

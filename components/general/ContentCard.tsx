@@ -73,25 +73,21 @@ export default function ContentCard({
                 )}
             </div>
 
-            {(authorName || showStatusBadge) && (
-                <div className="flex items-center gap-4 mb-4 mt-2 pointer-events-none">
-                    {authorName && (
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-500">
-                            <FiUser className="w-4 h-4" />
-                            <span>{authorName}</span>
-                        </div>
-                    )}
-
-                    {showStatusBadge && (
-                        <div className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
-                            isClosed ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-600'
-                        }`}>
-                            {isClosed ? <FiLock className="w-3 h-3" /> : <FiUnlock className="w-3 h-3" />}
-                            <span>{isClosed ? 'Closed' : 'Open'}</span>
-                        </div>
-                    )}
+            <div className="flex items-center gap-3 mb-4 mt-2 pointer-events-none">
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-500">
+                    <FiUser className="w-3.5 h-3.5 shrink-0" />
+                    <span>{authorName || 'ToadStall'}</span>
                 </div>
-            )}
+
+                {showStatusBadge && (
+                    <div className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                        isClosed ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-600'
+                    }`}>
+                        {isClosed ? <FiLock className="w-3 h-3" /> : <FiUnlock className="w-3 h-3" />}
+                        <span>{isClosed ? 'Closed' : 'Open'}</span>
+                    </div>
+                )}
+            </div>
 
             {categories && categories.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-3 pointer-events-none">

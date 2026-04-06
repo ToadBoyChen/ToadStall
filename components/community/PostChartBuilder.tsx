@@ -72,8 +72,15 @@ export default function PostChartBuilder({ onConfigChange }: PostChartBuilderPro
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    // Invalidate cache when dates or indicator change
-    useEffect(() => { cache.current = {}; }, [startYear, endYear, indicator]);
+    const isValidYear = (y: string) =>
+        /^\d{4}$/.test(y) && parseInt(y) >= 1960 && parseInt(y) <= new Date().getFullYear() + 1;
+
+    // Invalidate cache when dates or indicator change (only on valid years)
+    useEffect(() => {
+        if (isValidYear(startYear) && isValidYear(endYear)) {
+            cache.current = {};
+        }
+    }, [startYear, endYear, indicator]);
 
     // Fetch chart data
     useEffect(() => {
@@ -81,6 +88,7 @@ export default function PostChartBuilder({ onConfigChange }: PostChartBuilderPro
             setChartData([]);
             return;
         }
+        if (!isValidYear(startYear) || !isValidYear(endYear)) return;
 
         const fetchAll = async () => {
             const uncached = countries.filter(
@@ -122,7 +130,7 @@ export default function PostChartBuilder({ onConfigChange }: PostChartBuilderPro
             }
         };
 
-        const t = setTimeout(fetchAll, 300);
+        const t = setTimeout(fetchAll, 150);
         return () => clearTimeout(t);
     }, [indicator, countries, startYear, endYear]);
 
@@ -327,10 +335,6 @@ export default function PostChartBuilder({ onConfigChange }: PostChartBuilderPro
                         <ChartRenderer type={chartType} data={chartData} isCompact={false} smartYAxis={smartYAxis} />
                     </div>
 
-                    <p className="text-xs text-slate-400 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                        Live data from World Bank Open Data — readers can interact with the chart
-                    </p>
                 </>
             )}
         </div>
