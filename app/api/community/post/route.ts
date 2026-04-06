@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     try {
         const reqBody = await request.json();
         
-        const { title, content, authorId, authorName, status, categoryIds } = reqBody;
+        const { title, content, authorId, authorName, status, categoryIds, chart } = reqBody;
 
         if (!title || !content || !authorId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -38,6 +38,17 @@ export async function POST(request: Request) {
                 _ref: id,
                 _key: id,
             }));
+        }
+
+        if (chart?.indicator) {
+            sanityDoc.chart = {
+                indicator: chart.indicator,
+                countries: Array.isArray(chart.countries) ? chart.countries : ['WLD'],
+                startYear: chart.startYear || '2000',
+                endYear: chart.endYear || new Date().getFullYear().toString(),
+                chartType: chart.chartType || 'line',
+                smartYAxis: chart.smartYAxis !== false,
+            };
         }
 
         const result = await writeClient.create(sanityDoc);

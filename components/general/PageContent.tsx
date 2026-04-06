@@ -4,12 +4,22 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { urlFor } from '@/sanity/lib/image';
 import EngagementBar from '@/components/general/EngagementBar';
-import { FiLock } from 'react-icons/fi'; // Imported the lock icon
+import PostChartDisplay from '@/components/community/PostChartDisplay';
+import { FiLock } from 'react-icons/fi';
 
 interface Category {
     _id: string;
     title: string;
     icon?: string;
+}
+
+interface ChartConfig {
+    indicator: string;
+    countries: string[];
+    startYear: string;
+    endYear: string;
+    chartType: 'line' | 'bar' | 'pie';
+    smartYAxis: boolean;
 }
 
 interface PageContentProps {
@@ -23,6 +33,7 @@ interface PageContentProps {
     headerExtras?: React.ReactNode;
     status?: string;
     categories?: Category[];
+    chart?: ChartConfig;
 }
 
 function getMarkdownString(bodyData: any): string | null {
@@ -49,7 +60,8 @@ export default function PageContent({
     portableTextComponents,
     headerExtras,
     status,
-    categories
+    categories,
+    chart,
 }: PageContentProps) {
     
     // 2. Check if the post is closed
@@ -136,7 +148,11 @@ export default function PageContent({
                         </div>
                     </header>
 
-                    <div className="prose prose-slate sm:prose-lg max-w-none 
+                    {chart?.indicator && (
+                        <PostChartDisplay config={chart} />
+                    )}
+
+                    <div className="prose prose-slate sm:prose-lg max-w-none
                                     prose-headings:font-bold prose-headings:tracking-tight 
                                     prose-a:text-emerald-600 prose-a:decoration-emerald-500/30 hover:prose-a:decoration-emerald-500 prose-a:underline-offset-4 prose-a:transition-all
                                     prose-img:rounded-xl">

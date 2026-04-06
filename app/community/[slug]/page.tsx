@@ -11,8 +11,10 @@ const QUERY = `*[ _type == "community" && slug.current == $slug ][0] {
     authorName,
     mainImage,
     status,
+    chart,
     "categories": categories[]->{ _id, title, icon }
 }`;
+
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const post = await client.fetch(QUERY, { slug: resolvedParams.slug });
@@ -30,6 +32,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             portableTextComponents={sharedPortableTextComponents}
             status={post.status}
             categories={post.categories}
+            chart={post.chart}
         />
     );
 }

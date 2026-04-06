@@ -70,5 +70,19 @@ export const communityType = defineType({
       title: 'Initial Post / Context',
       type: 'text',
     }),
+    defineField({
+      name: 'chart',
+      title: 'Embedded Chart',
+      type: 'object',
+      description: 'Optional World Bank data chart embedded in this post.',
+      fields: [
+        defineField({ name: 'indicator', type: 'string', title: 'Indicator ID' }),
+        defineField({ name: 'countries', type: 'array', of: [{ type: 'string' }], title: 'Country Codes' }),
+        defineField({ name: 'startYear', type: 'string', title: 'Start Year' }),
+        defineField({ name: 'endYear', type: 'string', title: 'End Year' }),
+        defineField({ name: 'chartType', type: 'string', title: 'Chart Type' }),
+        defineField({ name: 'smartYAxis', type: 'boolean', title: 'Auto-scale Y Axis' }),
+      ],
+    }),
   ],
 })
