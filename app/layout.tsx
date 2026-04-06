@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/layout/Nav";
@@ -19,6 +19,11 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+    width: 'device-width',
+    initialScale: 1,
+};
+
 export const metadata: Metadata = {
     title: "ToadStall",
     description: "ToadStall by Toby Chen",
@@ -38,7 +43,7 @@ export default function RootLayout({
                     <Background />
 
                     <div className="flex flex-col">
-                        <div className="my-32">
+                        <div className="my-20 sm:my-32">
                             {children}
                         </div>
                         <Footer />
