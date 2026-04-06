@@ -30,32 +30,22 @@ export default function DataCarousel({ posts }: { posts: any[] }) {
     };
 
     return (
-        <div className="relative">
-            {/* Nav buttons */}
-            <div className="absolute -top-14 right-0 flex items-center gap-2 z-10">
-                <button
-                    onClick={() => scroll('left')}
-                    disabled={!canLeft}
-                    className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-emerald-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
-                    aria-label="Previous"
-                >
-                    <FiChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                    onClick={() => scroll('right')}
-                    disabled={!canRight}
-                    className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-emerald-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm"
-                    aria-label="Next"
-                >
-                    <FiChevronRight className="w-4 h-4" />
-                </button>
-            </div>
+        <div className="flex items-center gap-3">
+            {/* Left button */}
+            <button
+                onClick={() => scroll('left')}
+                disabled={!canLeft}
+                className="shrink-0 w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-emerald-600 disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm"
+                aria-label="Previous"
+            >
+                <FiChevronLeft className="w-4 h-4" />
+            </button>
 
             {/* Card track */}
             <div
                 ref={trackRef}
                 onScroll={updateButtons}
-                className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6"
+                className="flex gap-4 overflow-hidden scrollbar-hide pb-2 flex-1"
             >
                 {posts.map((post: any) => (
                     <Link
@@ -102,6 +92,16 @@ export default function DataCarousel({ posts }: { posts: any[] }) {
                     </Link>
                 ))}
             </div>
+
+            {/* Right button */}
+            <button
+                onClick={() => scroll('right')}
+                disabled={!canRight}
+                className="shrink-0 w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-emerald-600 disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm"
+                aria-label="Next"
+            >
+                <FiChevronRight className="w-4 h-4" />
+            </button>
         </div>
     );
 }
