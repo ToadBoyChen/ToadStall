@@ -1,16 +1,15 @@
+import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
-import ContentCard from '@/components/general/ContentCard';
-import DynamicChartWrapper from '../charts/DynamicChartWrapper';
+import { FiArrowRight, FiUser } from 'react-icons/fi';
 
-export default async function PopularArticles() {
+export default async function PopularDiscussions() {
     let topIds: string[] = [];
     const scoreMap: Record<string, number> = {};
 
     try {
         const votesCollection = process.env.NEXT_PUBLIC_APPWRITE_VOTES_COLLECTION_ID as string;
-
         const votesRes = await databases.listDocuments(
             appwriteDatabaseId,
             votesCollection,
@@ -20,22 +19,19 @@ export default async function PopularArticles() {
         votesRes.documents.forEach((vote: any) => {
             const postId = vote.sanityPostId;
             if (!scoreMap[postId]) scoreMap[postId] = 0;
-
             if (vote.voteType === 1) scoreMap[postId] += 1;
             if (vote.voteType === -1) scoreMap[postId] -= 1;
         });
 
         topIds = Object.entries(scoreMap)
-            .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+            .sort(([, a], [, b]) => b - a)
             .slice(0, 50)
             .map(([id]) => id);
-
     } catch (error) {
-        console.error("Failed to fetch or calculate votes from Appwrite:", error);
+        console.error('Failed to fetch votes:', error);
     }
 
     const hasPopularPosts = topIds.length > 0;
-
     const queryFilter = hasPopularPosts
         ? `_type == "community" && defined(slug.current) && _id in $topIds`
         : `_type == "community" && defined(slug.current)`;
@@ -46,10 +42,8 @@ export default async function PopularArticles() {
             title,
             "slug": slug.current,
             status,
-            "authorName": author->name,
+            "authorName": coalesce(authorName, author->name),
             publishedAt,
-            "fullText": pt::text(body),
-            "chartBlock": body[_type == "dataVisualizer"][0],
             "categories": categories[]->{ _id, title, icon }
         }
     `;
@@ -59,49 +53,86 @@ export default async function PopularArticles() {
 
     if (hasPopularPosts) {
         posts = posts
-            .sort((a: any, b: any) => {
-                const scoreA = scoreMap[a._id] || 0;
-                const scoreB = scoreMap[b._id] || 0;
-                return scoreB - scoreA;
-            })
-            .slice(0, 3);
+            .sort((a: any, b: any) => (scoreMap[b._id] || 0) - (scoreMap[a._id] || 0))
+            .slice(0, 5);
     } else {
-        posts = posts.sort((a: any, b: any) =>
-            new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-        ).slice(0, 3);
+        posts = posts
+            .sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+            .slice(0, 5);
     }
 
-    if (posts.length === 0) {
-        return null;
-    }
+    if (posts.length === 0) return null;
 
     return (
         <section className="w-full">
-            <div className="mb-6 sm:mb-10 md:mb-12">
+            <div className="flex items-end justify-between mb-8 sm:mb-10">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                {hasPopularPosts ? "Top Discussions" : "Recent Discussions"}
+                    {hasPopularPosts ? 'Top Discussions' : 'Recent Discussions'}
                 </h2>
+                <Link
+                    href="/community"
+                    className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-white/50 hover:text-white transition-colors shrink-0 mb-2"
+                >
+                    View all <FiArrowRight className="w-4 h-4" />
+                </Link>
             </div>
-            <div className="grid grid-cols-1 gap-6">
-                {posts.map((post: any) => (
-                    <ContentCard
-                        key={post._id}
-                        id={post._id}
-                        title={post.title}
-                        href={`/community/${post.slug}`}
-                        publishedAt={post.publishedAt}
-                        text={post.fullText}
-                        authorName={post.authorName}
-                        status={post.status}
-                        categories={post.categories}
-                        categoryEmojiOnly={true}
-                        visualElement={
-                            post.chartBlock ? (
-                                <DynamicChartWrapper blockData={post.chartBlock} isCompact={true} />
-                            ) : null
-                        }
-                    />
-                ))}
+
+            <div className="flex flex-col gap-3">
+                {posts.map((post: any, i: number) => {
+                    const score = scoreMap[post._id];
+                    return (
+                        <Link
+                            key={post._id}
+                            href={`/community/${post.slug}`}
+                            className="group flex items-center gap-5 sm:gap-8 p-5 bg-white/80 hover:bg-white rounded-2xl transition-all duration-200 border border-transparent hover:border-emerald-100"
+                        >
+                            {/* Rank number */}
+                            <span className="text-3xl sm:text-4xl font-black text-slate-200 group-hover:text-emerald-200 transition-colors w-10 sm:w-14 shrink-0 leading-none tabular-nums">
+                                {String(i + 1).padStart(2, '0')}
+                            </span>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-emerald-600 transition-colors tracking-tight leading-snug line-clamp-2">
+                                    {post.title}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                                    <span className="flex items-center gap-1 text-xs font-semibold text-slate-400">
+                                        <FiUser className="w-3 h-3" />
+                                        {post.authorName || 'ToadStall'}
+                                    </span>
+                                    {post.publishedAt && (
+                                        <span className="text-xs text-slate-400">
+                                            {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </span>
+                                    )}
+                                    {post.categories?.filter((c: any) => c.icon).map((cat: any) => (
+                                        <span key={cat._id} title={cat.title} className="text-sm leading-none">
+                                            {cat.icon}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Score + arrow */}
+                            <div className="flex items-center gap-3 shrink-0">
+                                {hasPopularPosts && score !== undefined && (
+                                    <span className={`text-xs font-black px-2.5 py-1 rounded-full ${
+                                        score > 0 ? 'bg-emerald-50 text-emerald-600' : score < 0 ? 'bg-red-50 text-red-500' : 'bg-slate-100 text-slate-400'
+                                    }`}>
+                                        {score > 0 ? '+' : ''}{score}
+                                    </span>
+                                )}
+                                {post.status === 'open' && (
+                                    <span className="hidden sm:block text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md bg-emerald-50 text-emerald-600">
+                                        Open
+                                    </span>
+                                )}
+                                <FiArrowRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
+                            </div>
+                        </Link>
+                    );
+                })}
             </div>
         </section>
     );

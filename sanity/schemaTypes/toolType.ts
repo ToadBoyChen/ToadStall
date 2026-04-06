@@ -32,6 +32,19 @@ export const toolType = defineType({
       of: [{ type: 'reference', to: [{ type: 'category' }] }],
     }),
     defineField({
+      name: 'contentType',
+      title: 'Content Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Tool', value: 'tool' },
+          { title: 'Breakdown', value: 'breakdown' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'tool',
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Short Description',
       type: 'text',
