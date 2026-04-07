@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi';
 import { TbTools, TbZoomQuestion } from 'react-icons/tb';
+import GradientText from '@/components/animations/GradientText';
+import FadeIn from '@/components/animations/CustomDiv';
 
 const RECENT_POSTS_QUERY = `
   *[ _type == "tools-technical" && defined(slug.current) ] | order(_createdAt desc) [0...6] {
@@ -42,7 +44,7 @@ export default async function BestTools() {
         <section className="w-full">
             <div className="flex items-end justify-between mb-8 sm:mb-10">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                    Tools & Breakdowns
+                    <GradientText>Tools</GradientText> & Breakdowns
                 </h2>
                 <Link
                     href="/tools-technical"
@@ -52,6 +54,7 @@ export default async function BestTools() {
                 </Link>
             </div>
 
+            <FadeIn>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {posts.map((post: any, i: number) => {
                     const isBreakdown = post.contentType === 'breakdown';
@@ -104,6 +107,7 @@ export default async function BestTools() {
                     );
                 })}
             </div>
+            </FadeIn>
         </section>
     );
 }

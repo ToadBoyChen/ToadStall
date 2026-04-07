@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { FiArrowRight } from 'react-icons/fi';
 import DataCarousel from './DataCarousel';
+import GradientText from '@/components/animations/GradientText';
+import FadeIn from '@/components/animations/CustomDiv';
 
 const RECENT_POSTS_QUERY = `
   *[ _type == "data" && defined(slug.current) ] | order(publishedAt desc) [0...8] {
@@ -26,7 +28,7 @@ export default async function RecentData() {
         <section className="w-full">
             <div className="flex items-end justify-between mb-8 sm:mb-10">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                    Key Data Points
+                    Key <GradientText>Data</GradientText> Points
                 </h2>
                 <Link
                     href="/data"
@@ -36,7 +38,9 @@ export default async function RecentData() {
                 </Link>
             </div>
 
-            <DataCarousel posts={posts} />
+            <FadeIn>
+                <DataCarousel posts={posts} />
+            </FadeIn>
         </section>
     );
 }

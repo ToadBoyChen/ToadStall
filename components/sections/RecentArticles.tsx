@@ -4,6 +4,8 @@ import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import { FiArrowRight, FiUser } from 'react-icons/fi';
 import ContentCard from '@/components/general/ContentCard';
+import GradientText from '@/components/animations/GradientText';
+import FadeIn from '@/components/animations/CustomDiv';
 
 const RECENT_POSTS_QUERY = `
   *[ _type == "article" && defined(slug.current) ] | order(publishedAt desc) [0...6] {
@@ -33,7 +35,7 @@ export default async function RecentArticles() {
         <section className="w-full">
             <div className="flex items-end justify-between mb-8 sm:mb-10">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                    Recent Articles
+                    Recent <GradientText>Articles</GradientText>
                 </h2>
                 <Link
                     href="/articles"
@@ -43,6 +45,7 @@ export default async function RecentArticles() {
                 </Link>
             </div>
 
+            <FadeIn>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
                 {/* Featured article — left, spans 3 cols */}
                 <Link
@@ -59,7 +62,7 @@ export default async function RecentArticles() {
                                 sizes="(max-width: 1024px) 100vw, 60vw"
                             />
                             {/* gradient overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
                         </>
                     ) : (
                         <>
@@ -176,6 +179,7 @@ export default async function RecentArticles() {
                     </div>
                 ))}
             </div>
+            </FadeIn>
         </section>
     );
 }

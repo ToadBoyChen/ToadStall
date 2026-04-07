@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { TbMushroom } from 'react-icons/tb';
 import { FiMenu, FiX } from 'react-icons/fi';
 import UserMenu from '@/components/UserMenu';
+import HackerText from '@/components/animations/HackerText';
 
 const NAV_LINKS = [
     { label: 'Data', href: '/data' },
@@ -29,7 +30,7 @@ export default function Nav() {
                     onClick={() => setOpen(false)}
                 >
                     <TbMushroom className="w-5 h-5 text-emerald-600 group-hover:rotate-12 transition-transform duration-200" />
-                    <span className="text-sm font-black tracking-tight text-slate-900">ToadStall</span>
+                    <HackerText text="ToadStall" className="text-sm font-black tracking-tight text-slate-900" />
                 </Link>
 
                 {/* Desktop nav links */}

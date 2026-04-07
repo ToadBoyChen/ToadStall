@@ -3,6 +3,8 @@ import { client } from '@/sanity/lib/client';
 import { databases, appwriteDatabaseId } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { FiArrowRight, FiUser } from 'react-icons/fi';
+import GradientText from '@/components/animations/GradientText';
+import FadeIn from '@/components/animations/CustomDiv';
 
 export default async function PopularDiscussions() {
     let topIds: string[] = [];
@@ -67,7 +69,11 @@ export default async function PopularDiscussions() {
         <section className="w-full">
             <div className="flex items-end justify-between mb-8 sm:mb-10">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                    {hasPopularPosts ? 'Top Discussions' : 'Recent Discussions'}
+                    {hasPopularPosts ? (
+                        <><GradientText>Top</GradientText> Discussions</>
+                    ) : (
+                        <>Recent <GradientText>Discussions</GradientText></>
+                    )}
                 </h2>
                 <Link
                     href="/community"
@@ -77,6 +83,7 @@ export default async function PopularDiscussions() {
                 </Link>
             </div>
 
+            <FadeIn>
             <div className="flex flex-col gap-3">
                 {posts.map((post: any, i: number) => {
                     const score = scoreMap[post._id];
@@ -134,6 +141,7 @@ export default async function PopularDiscussions() {
                     );
                 })}
             </div>
+            </FadeIn>
         </section>
     );
 }

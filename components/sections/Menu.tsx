@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { FiGlobe, FiFileText, FiArrowRight } from 'react-icons/fi';
 import { MdOutlinePeopleAlt } from 'react-icons/md';
 import { TbTools } from 'react-icons/tb';
+import HackerText from '@/components/animations/HackerText';
+import FadeIn from '@/components/animations/CustomDiv';
 
 const MENU_ITEMS = [
     {
@@ -37,12 +39,13 @@ export default function Menu() {
         <section className="w-full">
             <div className="mb-6 sm:mb-10 md:mb-12">
                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-                    Explore Platform
+                    <HackerText text="Explore Platform" />
                 </h2>
             </div>
 
             <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                {MENU_ITEMS.map((item) => (
+                {MENU_ITEMS.map((item, i) => (
+                    <FadeIn key={item.href} delay={i * 80}>
                     <Link
                         key={item.href}
                         href={item.href}
@@ -63,6 +66,7 @@ export default function Menu() {
                             Explore <FiArrowRight className="ml-2 text-lg" />
                         </div>
                     </Link>
+                    </FadeIn>
                 ))}
             </div>
 
