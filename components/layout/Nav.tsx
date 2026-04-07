@@ -29,8 +29,13 @@ export default function Nav() {
                     className="flex items-center gap-1.5 shrink-0 group"
                     onClick={() => setOpen(false)}
                 >
-                    <TbMushroom className="w-5 h-5 text-emerald-600 group-hover:rotate-12 transition-transform duration-200" />
-                    <HackerText text="ToadStall" className="text-sm font-black tracking-tight text-slate-900" />
+                    <TbMushroom 
+                        className="w-6 h-6 text-emerald-600 transition-transform duration-200 -translate-y-0.5
+                    
+                        group-hover:rotate-12
+                        " 
+                    />
+                    <HackerText text="ToadStall" className="text-md font-black tracking-tighter text-slate-900 font-mono" />
                 </Link>
 
                 {/* Desktop nav links */}
@@ -41,11 +46,10 @@ export default function Nav() {
                             <Link
                                 key={href}
                                 href={href}
-                                className={`px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                                    active
+                                className={`px-3.5 py-1.5 rounded-full text-sm transition-colors ${active
                                         ? 'text-emerald-600 bg-emerald-50'
-                                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-                                }`}
+                                        : 'text-slate-500 hover:text-white hover:bg-emerald-500/60'
+                                    }`}
                             >
                                 {label}
                             </Link>
@@ -76,11 +80,10 @@ export default function Nav() {
                                 key={href}
                                 href={href}
                                 onClick={() => setOpen(false)}
-                                className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                                    active
+                                className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${active
                                         ? 'text-emerald-600 bg-emerald-50'
                                         : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
-                                }`}
+                                    }`}
                             >
                                 {label}
                             </Link>

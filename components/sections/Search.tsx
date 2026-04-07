@@ -60,7 +60,7 @@ export default function Search() {
 
     return (
         <div className="relative w-full" ref={searchRef}>
-            <div className="relative group bg-white/80 py-6 px-16 rounded-full active:scale-98 focus-within:scale-103 focus-within:bg-white transition-all duration-100">
+            <div className="relative group bg-white/80 py-4 md:py-6 px-16 rounded-full active:scale-98 focus-within:scale-103 focus-within:bg-white transition-all duration-100">
                 <FiSearch
                     className="absolute z-10 left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-500 transition-colors group-focus-within:text-emerald-600"
                 />

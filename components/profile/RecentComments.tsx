@@ -117,7 +117,7 @@ export default function RecentComments({
                                                 comment={comment}
                                                 currentUserId={currentUserId}
                                                 currentUserIsVerified={currentUserIsVerified}
-                                                initialIsFollowing={isFollowedByMe}
+                                                postId={comment.postId ?? ''}
                                             />
                                         </div>
                                     </div>

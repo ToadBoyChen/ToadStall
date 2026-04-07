@@ -46,26 +46,26 @@ export default function Menu() {
             <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:gap-8">
                 {MENU_ITEMS.map((item, i) => (
                     <FadeIn key={item.href} delay={i * 80}>
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className="group relative flex flex-col justify-between p-8 bg-white/80 rounded-3xl transition-all duration-300 hover:bg-white"
-                    >
-                        <div className="absolute -top-3 -right-3 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 p-1 rounded-full bg-emerald-50 group-hover:bg-emerald-200 flex items-center justify-center text-2xl text-emerald-600">
-                            {item.icon}
-                        </div>
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className="group relative flex flex-col justify-between p-6 md:p-8 bg-white/80 rounded-3xl transition-all duration-300 hover:bg-white"
+                        >
+                            <div className="absolute -top-3 -right-3 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 p-1 rounded-full bg-emerald-100 flex items-center justify-center text-2xl text-emerald-600">
+                                {item.icon}
+                            </div>
 
-                        <h3 className="text-lg mb-1 sm:text-xl sm:mb-2 md:text-2xl md:mb-3 font-black group-hover:text-emerald-400 transition-colors duration-300 tracking-tight">
-                            {item.title}
-                        </h3>
-                        <p className="text-slate-700 leading-tight text-sm sm:text-md md:text-lg">
-                            {item.description}
-                        </p>
+                            <h3 className="text-lg mb-1 sm:text-xl sm:mb-2 md:text-2xl md:mb-3 font-black group-hover:text-emerald-400 transition-colors duration-300 tracking-tight">
+                                {item.title}
+                            </h3>
+                            <p className="text-slate-700 leading-tight text-sm sm:text-md md:text-lg">
+                                {item.description}
+                            </p>
 
-                        <div className="mt-8 flex items-center text-emerald-500 font-extrabold text-md sm:text-lg md:text-xl md:mt-16 tracking-widest uppercase translate-x-0 group-hover:translate-x-4 transition-all duration-300">
-                            Explore <FiArrowRight className="ml-2 text-lg" />
-                        </div>
-                    </Link>
+                            <div className="mt-8 flex items-center text-emerald-500 font-extrabold text-md sm:text-lg md:text-xl tracking-widest uppercase translate-x-0 group-hover:translate-x-4 transition-all duration-300">
+                                Explore <FiArrowRight className="ml-2 text-lg" />
+                            </div>
+                        </Link>
                     </FadeIn>
                 ))}
             </div>

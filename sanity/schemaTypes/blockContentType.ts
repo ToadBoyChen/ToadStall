@@ -1,5 +1,6 @@
 import { defineType, defineArrayMember, defineField } from 'sanity'
 import { ImageIcon, SearchIcon } from '@sanity/icons'
+import { pollBlock } from './pollBlockType'
 
 import worldBankIndicators from '@/lib/worldBankIndicators.json';
 
@@ -222,6 +223,9 @@ export const blockContentType = defineType({
                 })
             ]
         }),
+
+        // 3. Poll Block
+        pollBlock,
 
         // 2. The Interactive World Bank Explorer Block (Focused Mode Only)
         defineArrayMember({

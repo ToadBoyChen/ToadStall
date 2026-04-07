@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import DynamicChartWrapper from '@/components/charts/DynamicChartWrapper';
 import DataExplorer from '@/components/charts/DataExplorer';
+import PollBlock from '@/components/polls/PollBlock';
 
 export const sharedPortableTextComponents = {
     types: {
@@ -28,6 +29,10 @@ export const sharedPortableTextComponents = {
                     />
                 </div>
             );
+        },
+
+        poll: ({ value }: any) => {
+            return <PollBlock value={value} />;
         },
 
         image: ({ value }: any) => {
