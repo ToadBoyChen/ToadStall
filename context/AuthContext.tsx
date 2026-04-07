@@ -10,7 +10,11 @@ interface ProfileDocument extends Models.Document {
     bio?: string;
     avatarURL?: string;
     isVerified: boolean;
-    username: string; 
+    username: string;
+    userTag?: string;
+    userTagId?: string;
+    userTagEmoji?: string;
+    userTagColor?: string;
 }
 
 // 2. Cleaned this up. It just extends the base user and adds the optional profile

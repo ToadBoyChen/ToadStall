@@ -10,6 +10,9 @@ import CreatePostCTA from '@/components/profile/CreatePostCTA';
 import UserCommunityPosts from '@/components/profile/UserCommunityPosts';
 import RecentComments from './RecentComments';
 import ProfileHeader from './ProfileHeader';
+import UserTagPicker from './UserTagPicker';
+import UserTagBadge from './UserTagBadge';
+import type { UserTag } from './UserTagBadge';
 
 
 const ProfileVerificationBanner = ({ profile, isOwnProfile, handleSendVerification, isSendingVerification, verificationStatus }: any) => {
@@ -41,16 +44,35 @@ const ProfileVerificationBanner = ({ profile, isOwnProfile, handleSendVerificati
     );
 };
 
-const ProfileAboutActivity = ({ profile, isOwnProfile, isEditing, editBio, setEditBio, stats }: any) => (
+const ProfileAboutActivity = ({ profile, isOwnProfile, isEditing, editBio, setEditBio, selectedTag, setSelectedTag, stats }: any) => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <div className="md:col-span-2">
-            <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">About</h2>
-            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 h-[calc(100%-28px)]">
-                {isOwnProfile && isEditing ? (
-                    <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="w-full h-full min-h-25 p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-white" placeholder="Write something about yourself..." />
-                ) : (
-                    <p className="text-slate-700 font-medium whitespace-pre-wrap">{profile.bio || "No bio yet."}</p>
-                )}
+        <div className="md:col-span-2 flex flex-col gap-4">
+            {/* Political / ideological tag */}
+            <div>
+                <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">Political Stance</h2>
+                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                    {isOwnProfile && isEditing ? (
+                        <UserTagPicker selectedTag={selectedTag} onSelect={setSelectedTag} />
+                    ) : profile.userTag ? (
+                        <UserTagBadge label={profile.userTag} emoji={profile.userTagEmoji} color={profile.userTagColor} size="md" />
+                    ) : (
+                        <p className="text-slate-400 text-sm font-medium">
+                            {isOwnProfile ? 'Not set — edit your profile to add your stance.' : 'No stance set.'}
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            {/* Bio */}
+            <div>
+                <h2 className="text-sm font-bold tracking-widest uppercase text-slate-400 mb-3">About</h2>
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    {isOwnProfile && isEditing ? (
+                        <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="w-full min-h-25 p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-white" placeholder="Write something about yourself..." />
+                    ) : (
+                        <p className="text-slate-700 font-medium whitespace-pre-wrap">{profile.bio || "No bio yet."}</p>
+                    )}
+                </div>
             </div>
         </div>
         <div>
@@ -131,8 +153,9 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState('');
+    const [selectedTag, setSelectedTag] = useState<UserTag | null>(null);
     const [editFile, setEditFile] = useState<File | null>(null);
-    const [isSaving] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isSendingVerification] = useState(false);
     const [verificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -162,6 +185,14 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
                         setProfile(fetchedProfile);
                     }
                     setEditBio(fetchedProfile.bio || '');
+                    if (fetchedProfile.userTagId && fetchedProfile.userTag) {
+                        setSelectedTag({
+                            $id: fetchedProfile.userTagId,
+                            label: fetchedProfile.userTag,
+                            emoji: fetchedProfile.userTagEmoji || '',
+                            color: fetchedProfile.userTagColor || 'slate',
+                        });
+                    }
                 }
 
                 const commentsRes = await databases.listDocuments(
@@ -235,9 +266,33 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
         fetchUserData();
     }, [targetUserId, authLoading, isOwnProfile, currentUser]);
 
-    // Handlers (Save, Verify, Follow Toggle) remain exactly the same functionally
-    const handleSaveProfile = async () => { /* ... existing logic ... */ };
-    const handleSendVerification = async () => { /* ... existing logic ... */ };
+    const handleSaveProfile = async () => {
+        if (!profile || !currentUser) return;
+        setIsSaving(true);
+        try {
+            const updated = await databases.updateDocument(
+                appwriteDatabaseId,
+                process.env.NEXT_PUBLIC_APPWRITE_PROFILES_COLLECTION_ID as string,
+                profile.$id,
+                {
+                    bio: editBio,
+                    userTagId: selectedTag?.$id ?? null,
+                    userTag: selectedTag?.label ?? null,
+                    userTagEmoji: selectedTag?.emoji ?? null,
+                    userTagColor: selectedTag?.color ?? null,
+                }
+            );
+            setProfile(updated);
+            setIsEditing(false);
+            setEditFile(null);
+        } catch (error) {
+            console.error('Failed to save profile:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleSendVerification = async () => { /* existing logic */ };
 
     const handleFollowToggle = async () => {
         if (!currentUserIsVerified || !currentUser) return;
@@ -305,7 +360,9 @@ export default function ProfileSection({ targetUserId }: ProfileSectionProps) {
 
                     <ProfileAboutActivity
                         profile={profile} isOwnProfile={isOwnProfile} isEditing={isEditing}
-                        editBio={editBio} setEditBio={setEditBio} stats={stats}
+                        editBio={editBio} setEditBio={setEditBio}
+                        selectedTag={selectedTag} setSelectedTag={setSelectedTag}
+                        stats={stats}
                     />
 
                     <ProfileNetwork

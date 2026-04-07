@@ -1,7 +1,8 @@
 import { FiCamera } from "react-icons/fi";
 import VerificationBadge from "./VerificationBadge";
-import ProfilePfp from "./ProfilePfp"; 
-import FollowButton from "./FollowButton"; // <-- Import new component
+import ProfilePfp from "./ProfilePfp";
+import FollowButton from "./FollowButton";
+import UserTagBadge from "./UserTagBadge";
 
 export default function ProfileHeader({ 
     profile, 
@@ -29,6 +30,11 @@ export default function ProfileHeader({
                     <h1 className="text-3xl font-black tracking-tight mb-1 text-white">
                         {profile.username || (isOwnProfile && currentUser ? currentUser.name : "Community Member")}
                     </h1>
+                    {profile.userTag && (
+                        <div className="mb-1">
+                            <UserTagBadge label={profile.userTag} emoji={profile.userTagEmoji} color={profile.userTagColor} size="md" />
+                        </div>
+                    )}
                     <p className="text-emerald-200/80 font-medium">Joined {joinedDate}</p>
                 </div>
 
