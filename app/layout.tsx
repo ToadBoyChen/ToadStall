@@ -4,7 +4,6 @@ import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import Background from "@/components/layout/Background";
-import Breadcrumb from "@/components/layout/Breadcrumb";
 import { Analytics } from "@vercel/analytics/next"
 
 import { AuthProvider } from "@/context/AuthContext";

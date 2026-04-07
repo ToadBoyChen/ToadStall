@@ -29,16 +29,16 @@ export default function UserMenu() {
     });
 
     if (isLoading) {
-        return <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-200 animate-pulse"></div>;
+        return <div className="w-8 h-8 rounded-full bg-slate-200 animate-pulse" />;
     }
 
     if (!user) {
         return (
             <Link
                 href="/login"
-                className="text-sm md:text-lg font-bold text-slate-700 hover:text-emerald-500 rounded-full flex items-center gap-3 p-1 pr-4 transition-all "
+                className="text-sm font-semibold text-slate-600 hover:text-emerald-600 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
             >
-                Sign In
+                Sign in
             </Link>
         );
     }
@@ -47,19 +47,14 @@ export default function UserMenu() {
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-8 pr-0 sm:pr-2 md:pr-4 transition-all p-1 cursor-pointer"
+                className="flex items-center p-0.5 rounded-full cursor-pointer hover:ring-2 hover:ring-emerald-200 transition-all"
+                aria-label="Account menu"
             >
-                <p className="opacity-0 sm:opacity-100 text-sm md:text-lg font-bold text-slate-700 max-w-25 truncate">
-                    {user.name}
-                </p>
-                
-                {/* Replaced static image logic with dynamic ProfilePfp */}
-                <ProfilePfp 
-                    userId={user.$id} 
-                    fallbackName={user.name || '?'} 
-                    className="w-12 h-12 md:w-14 md:h-14 border-2 border-emerald-100 shadow-sm transition-opacity duration-300"
+                <ProfilePfp
+                    userId={user.$id}
+                    fallbackName={user.name || '?'}
+                    className="w-8 h-8 border border-emerald-100 shadow-sm transition-opacity duration-300"
                 />
-
             </button>
             {menuTransitions((style, item) =>
                 item ? (
